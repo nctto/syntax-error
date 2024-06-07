@@ -1,0 +1,41 @@
+<div class="flex flex-row p-5 rounded-xl gap-4 border-slate-600 border ">
+    <div class="flex flex-col gap-2 justify-center align-middle items-center">
+        <button class="bg-slate-300 p-2 rounded-lg" hx-post="/clicked/{{.ID }}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm.53 5.47a.75.75 0 0 0-1.06 0l-3 3a.75.75 0 1 0 1.06 1.06l1.72-1.72v5.69a.75.75 0 0 0 1.5 0v-5.69l1.72 1.72a.75.75 0 1 0 1.06-1.06l-3-3Z" clip-rule="evenodd" />
+            </svg>
+        </button>
+        <div class="flex flex-col justify-center items-center align-middle">
+            <p class="text-sm font-bold text-slate-400">0</p>
+            <p class="text-xs text-slate-400">votes</p>
+        </div>
+    </div>
+    <div class="flex flex-col w-full">
+        <a
+            href="{{ .Link }}"
+            class="flex flex-row gap-2"
+            target="_blank"
+        >
+            <h3 class="text-lg font-bold text-slate-100" style="line-height:0">
+                {{ .Title }}
+                <span class="text-sm text-slate-400">by {{ .Title }}</span><br/>
+            </h3>
+        </a>
+        <p class="text-sm text-slate-300">
+            Description Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos cupiditate hic, incidunt, magnam ratione nulla obcaecati voluptas minima, officiis reprehenderit harum! Distinctio asperiores molestiae sapiente similique consectetur, recusandae adipisci quidem. 
+        </p>
+    </div>
+    <div class="flex flex-row gap-3 justify-start align-middle items-center">
+        <a class="text-xs text-slate-400" href="/projects/report/{{ .ID }}" class="text-xs">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+            </svg>
+
+        </a>
+        <a class="text-xs text-slate-400" href="/projects/report/{{ .ID }}" class="text-xs">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3v1.5M3 21v-6m0 0 2.77-.693a9 9 0 0 1 6.208.682l.108.054a9 9 0 0 0 6.086.71l3.114-.732a48.524 48.524 0 0 1-.005-10.499l-3.11.732a9 9 0 0 1-6.085-.711l-.108-.054a9 9 0 0 0-6.208-.682L3 4.5M3 15V4.5" />
+            </svg>
+        </a>
+    </div>
+</div>

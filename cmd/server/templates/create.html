@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en-us">
+
+  <head>
+  <title>{{ .title }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+
+  <link rel="manifest" href="/assets/site.webmanifest">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/fontawesome.min.css" integrity="sha384-BY+fdrpOd3gfeRvTSMT+VUZmA728cfF9Z2G42xpaRkUGu2i3DyzpTURDo5A6CaLK" crossorigin="anonymous">
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  
+  <body class="w-screen min-h-screen h-full bg-black">
+   {{ template "nav.html" .}}
+    {{ if .session_user }}
+    <section class="p-10 mt-20">
+      <div class="flex flex-col gap-2">
+        <div>
+          <a href="/" class="text-white text-xs">go back</a>
+        </div>
+        <div class="flex flex-col gap-4">
+          <h1 class="text-3xl text-white font-bold">Submit</h1>
+          <form id="mainForm" hx-post="/create" class="flex flex-col gap-3" hx-trigger="submit" hx-ext="json-enc" hx-target="#response" hx-swap="#mainForm">
+            <div class="form-control w-full flex flex-col gap-1">
+              <label for="title" class="text-white"><small>Title</small></label>
+              <input type="text" name="title" placeholder="" class="p-2 border border-slate-900 bg-black rounded-lg text-slate-200">
+            </div>
+            <div class="form-control w-full flex flex-col gap-1">
+              <label for="content" class="text-white"><small>Content</small></label>
+              <input type="text" name="content" placeholder="" class="p-2 border border-slate-900 bg-black rounded-lg text-slate-200">
+            </div>
+            <div class="form-control w-full flex flex-col gap-1">
+              <label for="link" class="text-white"><small>Link</small></label>
+              <input type="text" name="link" placeholder="" class="p-2 border border-slate-900 bg-black rounded-lg text-slate-200">
+            </div>
+              <div class="form-control w-full flex flex-col">
+                <label for="tags" class="text-white"><small>Tags</small></label>
+                <input type="text" name="tags" class="p-2 border border-slate-900 bg-black rounded-lg text-slate-200"  placeholder="          ">
+              </div>
+              <button id="submit" type="submit" class="p-2 bg-slate-900 text-white rounded-lg">submit</button>
+          </form>
+          <div id="response" class="flex flex-col gap-2"></div>
+      </div>
+    </section>
+    {{ end }}
+    {{ template "footer.html" .}}
+    <link rel="stylesheet" href="https://yaireo.github.io/tagify/dist/tagify.css">
+    <script src="https://yaireo.github.io/tagify/dist/tagify.js"></script>
+    <script src="/assets/js/alpine.js"></script>
+
+</body>
+</html>

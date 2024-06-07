@@ -1,0 +1,13 @@
+<nav class="w-full flex justify-between fixed top-0 left-0 right-0 z-10 bg-red-500 p-3 pt-4">
+    <div>
+    <h6 class="text-white font-bold" style="line-height: 15px;">{{ .title }}</h1>
+    </div>
+    <div class="flex flex-row gap-3 justify-center items-center align-middle">
+    {{ if .session_user }}
+    <img src="{{ .session_user.picture }}" alt="{{ .session_user.nickname }}" class="w-5 h-15 rounded-full">
+    <a href="/auth/logout" class="text-white text-sm">logout</a>
+    {{ else }}
+    <a href="/auth/login" class="text-white text-sm">login</a>
+    {{ end }}
+    </div>
+</nav>
