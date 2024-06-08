@@ -2,9 +2,12 @@ package project
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -62,8 +65,10 @@ func GetProjectByID(c *gin.Context) {
 		return
 	}
 
+	fmt.Println("ID", id)
 	project, err := DbGetProjectID(id)
 	if err != nil {
+		fmt.Println("Error", err.Error())
 		c.JSON(http.StatusNotFound, gin.H{"message": "Project not found"})
 		return
 	}
@@ -72,12 +77,21 @@ func GetProjectByID(c *gin.Context) {
 
 func CreateProject(c *gin.Context) {
 
+	session := sessions.Default(c)
+	user := session.Get("profile")
+	if user == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
+		return
+	}
+
 	var newProject Project
 	if err := c.BindJSON(&newProject); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
+	newProject.AuthorID = user.(map[string]interface{})["id"].(string)
+	newProject.CreatedAt = primitive.NewDateTimeFromTime(time.Now())
 	if !RequiredFields(newProject) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Missing required fields"})
 		return

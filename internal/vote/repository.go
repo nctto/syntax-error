@@ -2,6 +2,7 @@ package vote
 
 import (
 	"context"
+	"fmt"
 	"go-api/pkg/db"
 
 	"strconv"
@@ -11,10 +12,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var projectCollection = db.GetCollection("projects")
+var voteCollection = db.GetCollection("votes")
 
 func DbGetAllVotes(page string, limit string) ([]Vote, error) {
-	var projects []Vote
+	var votes []Vote
 
 	l, _ := strconv.ParseInt(limit, 10, 64)
 	p, _ := strconv.ParseInt(page, 10, 64)
@@ -26,45 +27,70 @@ func DbGetAllVotes(page string, limit string) ([]Vote, error) {
 		Limit: &l,
 	}
 
-	cursor, err := projectCollection.Find(context.Background(), bson.M{}, &fOpt)
+	cursor, err := voteCollection.Find(context.Background(), bson.M{}, &fOpt)
 
 	if err != nil {
-		return projects, err
+		return votes, err
 	}
 
 	defer cursor.Close(context.Background())
 
 	for cursor.Next(context.Background()) {
-		var project Vote
-		cursor.Decode(&project)
-		projects = append(projects, project)
+		var vote Vote
+		cursor.Decode(&vote)
+		votes = append(votes, vote)
 	}
 
-	return projects, nil
+	return votes, nil
 }
 
 func DbGetVoteID(id primitive.ObjectID) (Vote, error) {
-	var project Vote
-	err := projectCollection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&project)
-	return project, err
+	var vote Vote
+	err := voteCollection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&vote)
+	return vote, err
 }
 
-func DbCreateVote(project Vote) (primitive.ObjectID, error) {
-	result, err := projectCollection.InsertOne(context.Background(), project)
+func DbVoteExists(projectID primitive.ObjectID, user string) (bool, error) {
+	count, err := voteCollection.CountDocuments(context.Background(), bson.M{"project_id": projectID, "author_id": user})
+	if err != nil {
+		fmt.Println(err)
+		return false, err
+	}
+	return count > 0, nil
+}
+
+
+func DbCreateVote(vote Vote) (primitive.ObjectID, error) {
+	result, err := voteCollection.InsertOne(context.Background(), vote)
 	if err != nil {
 		return primitive.NilObjectID, err
 	}
 	return result.InsertedID.(primitive.ObjectID), nil
 }
 
-func DbUpdateVote(id primitive.ObjectID, project Vote) error {
+func DbUpdateVote(id primitive.ObjectID, vote Vote) error {
 	filter := bson.M{"_id": id}
-	update := bson.M{"$set": project}
-	_, err := projectCollection.UpdateOne(context.Background(), filter, update)
+	update := bson.M{"$set": vote}
+	_, err := voteCollection.UpdateOne(context.Background(), filter, update)
 	return err
 }
 
 func DbDeleteVote(id primitive.ObjectID) error {
-	_, err := projectCollection.DeleteOne(context.Background(), bson.M{"_id": id})
+	_, err := voteCollection.DeleteOne(context.Background(), bson.M{"_id": id})
 	return err
+}
+
+func DbGetProjectVotes(projectID primitive.ObjectID) (int32, error) {
+	var votes []Vote
+	cursor, err := voteCollection.Find(context.Background(), bson.M{"project_id": projectID})
+	if err != nil {
+		return 0, err
+	}
+	defer cursor.Close(context.Background())
+	for cursor.Next(context.Background()) {
+		var vote Vote
+		cursor.Decode(&vote)
+		votes = append(votes, vote)
+	}
+	return int32(len(votes)), nil	
 }

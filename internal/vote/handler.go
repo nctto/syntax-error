@@ -1,8 +1,11 @@
 package vote
 
 import (
+	"go-api/internal/project"
 	"net/http"
+	"time"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -11,12 +14,12 @@ func GetVotes(c *gin.Context) {
 	page := c.Query("page")
 	limit := c.Query("limit")
 
-	projects, err := DbGetAllVotes(page, limit)
+	votes, err := DbGetAllVotes(page, limit)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, projects)
+	c.JSON(http.StatusOK, votes)
 }
 
 func GetVoteByID(c *gin.Context) {
@@ -27,35 +30,63 @@ func GetVoteByID(c *gin.Context) {
 		return
 	}
 
-	project, err := DbGetVoteID(id)
+	vote, err := DbGetVoteID(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "Vote not found"})
 		return
 	}
-	c.JSON(http.StatusOK, project)
+	c.JSON(http.StatusOK, vote)
 }
 
 func CreateVote(c *gin.Context) {
-
+	
+	session := sessions.Default(c)
+	user := session.Get("profile")
+	if user == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
+		return
+	}
+	
+	projectId := c.Param("projectID")
+	id, err := primitive.ObjectIDFromHex(projectId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid vote ID"})
+		return
+	}
+	
+	project,err := project.DbGetProjectID(id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Project not found"})
+		return
+	}
+	
 	var newVote Vote
-	if err := c.BindJSON(&newVote); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-		return
-	}
-
-	if !RequiredFields(newVote) {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Missing required fields"})
-		return
-	}
-
-	id, err := DbCreateVote(newVote)
+	newVote.ProjectID = project.ID
+	newVote.AuthorID = user.(map[string]interface{})["nickname"].(string)
+	newVote.CreatedAt = primitive.NewDateTimeFromTime(time.Now())
+	vote,err := DbVoteExists(newVote.ProjectID, newVote.AuthorID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
+	
+	if vote {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Vote already exists"})
+		return
+	}
 
-	newVote.ID = id
-	c.JSON(http.StatusCreated, newVote)
+	if _,err := DbCreateVote(newVote); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	numberOfVotes, err := DbGetProjectVotes(newVote.ProjectID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+	
+	c.JSON(http.StatusCreated, numberOfVotes)
 }
 
 func UpdateVote(c *gin.Context) {

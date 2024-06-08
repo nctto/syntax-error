@@ -3,12 +3,10 @@ package project
 import (
 	"context"
 	"go-api/pkg/db"
-
 	"strconv"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var projectCollection = db.GetCollection("projects")
@@ -21,13 +19,33 @@ func DbGetAllProjects(page string, limit string) ([]Project, error) {
 
 	skip := int64(p*l - l)
 
-	fOpt := options.FindOptions{
-		Skip:  &skip,
-		Limit: &l,
+	pipeline := []bson.M{
+		{"$sort": bson.M{"created_at": -1}},
+		{"$skip": skip},
+		{"$limit": l},
+		{"$lookup": bson.M{
+			"from":         "votes",
+			"localField":   "_id",
+			"foreignField": "project_id",
+			"as":           "votes",
+		}},
+		{"$addFields": bson.M{
+			"votes": bson.M{"$size": "$votes"},
+		}},
+		{"$project": bson.M{
+			"id":    "$_id",
+			"title": "$title",
+			"content": "$content",
+			"author_id": "$author_id",
+			"link": "$link",
+			"tags": "$tags",
+			"created_at": "$created_at",
+			"votes": "$votes",
+		}},
+		{"$sort": bson.M{"votes": -1}},
 	}
 
-	cursor, err := projectCollection.Find(context.Background(), bson.M{}, &fOpt)
-
+	cursor, err := projectCollection.Aggregate(context.Background(), pipeline)
 	if err != nil {
 		return projects, err
 	}

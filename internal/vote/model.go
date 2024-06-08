@@ -7,9 +7,9 @@ import (
 
 
 type Vote struct {
-	ID      primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	ProjectID primitive.ObjectID `json:"project_id" bson:"project_id"`
-	UserID primitive.ObjectID `json:"user_id" bson:"user_id"`
+	ID      	primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	ProjectID 	primitive.ObjectID `json:"project_id" bson:"project_id"`
+	AuthorID 	string `json:"author_id" bson:"author_id"`
 	Vote	 int            	`json:"vote" bson:"vote"`
-	CreatedAt string `json:"created_at" bson:"created_at"`
+	CreatedAt  primitive.DateTime `json:"created_at" bson:"created_at"`
 }
