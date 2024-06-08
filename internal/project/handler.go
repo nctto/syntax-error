@@ -46,10 +46,14 @@ func FakeProjects(c *gin.Context) {
 
 func GetProjects(c *gin.Context) {
 
-	page := c.Query("page")
-	limit := c.Query("limit")
+	session := sessions.Default(c)
+	user := session.Get("profile")
 
-	projects, err := DbGetAllProjects(page, limit)
+	nickname := user.(map[string]interface{})["nickname"]
+	fmt.Println("GetProjects Nick", nickname)
+
+	page, limit, sortBy := ProjectsDefaultQueryParams(c)
+	projects, err := DbGetAllProjects(page, limit, sortBy, user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return

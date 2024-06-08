@@ -3,7 +3,6 @@ package project
 import (
 	"context"
 	"go-api/pkg/db"
-	"strconv"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -11,40 +10,17 @@ import (
 
 var projectCollection = db.GetCollection("projects")
 
-func DbGetAllProjects(page string, limit string) ([]Project, error) {
+func DbGetAllProjects(page int, limit int, sortBy string, user interface{} ) ([]Project, error) {
+
 	var projects []Project
-
-	l, _ := strconv.ParseInt(limit, 10, 64)
-	p, _ := strconv.ParseInt(page, 10, 64)
-
-	skip := int64(p*l - l)
-
-	pipeline := []bson.M{
-		{"$sort": bson.M{"created_at": -1}},
-		{"$skip": skip},
-		{"$limit": l},
-		{"$lookup": bson.M{
-			"from":         "votes",
-			"localField":   "_id",
-			"foreignField": "project_id",
-			"as":           "votes",
-		}},
-		{"$addFields": bson.M{
-			"votes": bson.M{"$size": "$votes"},
-		}},
-		{"$project": bson.M{
-			"id":    "$_id",
-			"title": "$title",
-			"content": "$content",
-			"author_id": "$author_id",
-			"link": "$link",
-			"tags": "$tags",
-			"created_at": "$created_at",
-			"votes": "$votes",
-		}},
-		{"$sort": bson.M{"votes": -1}},
+	pipeline := GetProjectsPipeline(page, limit, sortBy)
+	
+	if user != nil {
+		nickname := user.(map[string]interface{})["nickname"].(string)
+		pipeline = AddProjectsVotedPipeline(pipeline, nickname)
 	}
 
+	pipeline = AddProjectsPipelineSorter(pipeline, sortBy)
 	cursor, err := projectCollection.Aggregate(context.Background(), pipeline)
 	if err != nil {
 		return projects, err

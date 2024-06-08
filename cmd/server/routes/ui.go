@@ -1,9 +1,7 @@
 package routes
 
 import (
-	"fmt"
 	"net/http"
-	"strconv"
 
 	"go-api/cmd/server/middleware"
 	"go-api/internal/project"
@@ -13,27 +11,17 @@ import (
 	"github.com/gin-contrib/sessions"
 )
 
-
 func UiGetProjects(c *gin.Context) {
 	session := sessions.Default(c)
 	user := session.Get("profile")
 
-	page := c.Query("page")
-	limit := c.Query("limit")
-	sortBy := c.Query("sort_by")
-
-	fmt.Println("Page",page)
-	fmt.Println("Limit",limit)
-
-	projects, err := project.DbGetAllProjects(page, limit)
+	page, limit, sortBy := project.ProjectsDefaultQueryParams(c)
+	projects, err := project.DbGetAllProjects(page, limit, sortBy, user)
+	
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-
-	nextPage, _ := strconv.Atoi(page)
-	nextPage++
-
 
 	c.HTML(200, "projects.html", gin.H{
 		"title": title, 
@@ -41,7 +29,7 @@ func UiGetProjects(c *gin.Context) {
 		"projects": projects,
 		"page": page,
 		"limit": limit,
-		"nextPage": nextPage,
+		"nextPage": page + 1,
 		"sortBy": sortBy,
 	})
 }

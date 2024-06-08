@@ -19,16 +19,12 @@ func Home(c *gin.Context) {
 	session := sessions.Default(c)
 	user := session.Get("profile")
 
-	page := c.DefaultQuery("page", "1")
-	limit := c.DefaultQuery("limit", "10")
-	sortBy := c.DefaultQuery("sort_by", "top")
-
-	projects, err := project.DbGetAllProjects(page, limit)
+	page, limit, sortBy := project.ProjectsDefaultQueryParams(c)
+	projects, err := project.DbGetAllProjects(page, limit, sortBy, user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-
 	projectsView := project.ProjectsToProjectView(projects)
 	c.HTML(200, "index.html", gin.H{
 		"title": title, 

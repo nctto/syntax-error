@@ -12,6 +12,7 @@ type Project struct {
 	Link	 string             `json:"link" bson:"link"`
 	Tags	 []string            `json:"tags" bson:"tags,omitempty"`
 	Votes	 int32            	`json:"votes" bson:"votes,omitempty"`
+	Voted	 bool            	`json:"voted" bson:"voted,omitempty"`
 	CreatedAt primitive.DateTime `json:"created_at" bson:"created_at"`
 }
 

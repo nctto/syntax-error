@@ -59,5 +59,6 @@ func New(auth *authenticator.Authenticator) *gin.Engine {
 	routes.InitializeHome(router)
 	routes.InitializeProjects(router)
 	routes.InitializeVotes(router)
+	routes.InitializeUI(router)
 	return router
 }

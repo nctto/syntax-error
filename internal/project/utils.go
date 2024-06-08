@@ -1,18 +1,22 @@
 package project
 
 import (
+	"strconv"
+
+	"github.com/gin-gonic/gin"
 	"github.com/go-faker/faker/v4"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func RequiredFields(newProject Project) bool {
-	if newProject.Title == "" {
+func RequiredFields(project Project) bool {
+	if project.Title == "" {
 		return false
 	}
-	if newProject.Content == "" {
+	if project.Content == "" {
 		return false
 	}
-	if newProject.Link == "" {
+	if project.Link == "" {
 		return false
 	}
 	return true
@@ -45,9 +49,9 @@ func ProjectToProjectView(project Project) ProjectView {
 		Link: project.Link,
 		Tags: project.Tags,
 		Votes: project.Votes,
+		Voted: project.Voted,
 		CreatedAt: DateToString(project.CreatedAt),
 	}
-
 }
 
 func ProjectsToProjectView(projects []Project) []ProjectView {
@@ -56,4 +60,106 @@ func ProjectsToProjectView(projects []Project) []ProjectView {
 		projectView = append(projectView, ProjectToProjectView(project))
 	}
 	return projectView
+}
+
+func AddProjectsPipelineSorter(pipeline []bson.M, sortBy string) []bson.M {
+	if sortBy != "" {
+		pipeline = append(pipeline, bson.M{"$sort": bson.M{sortBy: -1}})
+	} else if sortBy == "new"{
+		pipeline = append(pipeline, bson.M{"$sort": bson.M{"created_at": -1}})
+	} else if sortBy == "old"{
+		pipeline = append(pipeline, bson.M{"$sort": bson.M{"created_at": 1}})
+	} else if sortBy == "best"{
+		pipeline = append(pipeline, bson.M{"$sort": bson.M{"votes": -1}})
+	} else if sortBy == "unvoted"{
+		pipeline = append(pipeline, bson.M{"$sort": bson.M{"votes": 1}})
+	}
+	return pipeline
+}
+
+func ProjectsDefaultQueryParams(c *gin.Context) (int, int, string) {
+	page := c.Query("page")
+	limit := c.Query("limit")
+	sortBy := c.Query("sort_by")
+
+	var p, l int = 0, 0
+	if page == "" {
+		p = 1
+	} else {
+		p,_ = strconv.Atoi(page)
+	}
+	if limit == "" {
+		l = 10
+	} else {
+		l,_ = strconv.Atoi(limit)
+	}
+	if sortBy == "" {
+		sortBy = "top"
+	}
+
+	if l > 100 {
+		l = 100
+	}
+	return p, l, sortBy
+}
+
+func GetProjectsPipeline(page int, limit int, sortBy string) []bson.M {
+	skip := int64(page*limit - limit)
+	pipeline := []bson.M{
+		{"$skip": skip},
+		{"$limit": limit},
+		{"$lookup": bson.M{
+			"from":         "votes",
+			"localField":   "_id",
+			"foreignField": "project_id",
+			"as":           "votes",
+		}},
+		{"$addFields": bson.M{
+			"votes": bson.M{"$size": "$votes"},
+		}},
+		{"$project": bson.M{
+			"id":    "$_id",
+			"title": "$title",
+			"content": "$content",
+			"author_id": "$author_id",
+			"link": "$link",
+			"tags": "$tags",
+			"created_at": "$created_at",
+			"votes": "$votes",
+		}},
+	}
+	return pipeline
+}
+
+func AddProjectsVotedPipeline(pipeline []bson.M, authorID string) []bson.M {
+	pipeline = append(pipeline, bson.M{"$lookup": bson.M{
+		"from":         "votes",
+		"let":          bson.M{"project_id": "$_id"},
+		"pipeline":     []bson.M{
+			{"$match": bson.M{
+				"$expr": bson.M{
+					"$and": []bson.M{
+						{"$eq": []string{"$project_id", "$$project_id"}},
+						{"$eq": []string{"$author_id", authorID}},
+					},
+				},
+			}},
+		},
+		"as": "voted",
+	}})
+	pipeline = append(pipeline, bson.M{
+		"$addFields": bson.M{
+			"voted": bson.M{"$cond": bson.M{
+				"if":  bson.M{
+					"$gt": []interface{}{
+						bson.M{"$size": "$voted"},
+						0,
+					},
+				},
+				"then": true,
+				"else": false,
+			}},
+		},
+	})
+	return pipeline
 }
