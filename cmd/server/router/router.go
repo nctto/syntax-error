@@ -54,7 +54,7 @@ func New(auth *authenticator.Authenticator) *gin.Engine {
 	
 
 	router.Static("/assets", "/Users/rfcku/sites/rfcku/go-api/cmd/server/assets")
-	router.LoadHTMLGlob("/Users/rfcku/sites/rfcku/go-api/cmd/server/templates/*")
+	router.LoadHTMLGlob("/Users/rfcku/sites/rfcku/go-api/cmd/server/html/templates/**/*")
 	
 	routes.InitializeAuth(router, auth)
 	routes.InitializeHome(router)

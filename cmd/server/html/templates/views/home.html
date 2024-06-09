@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en-us">
+ <head>
+  <title>{{ .title }}</title>
+  {{ template "header.html" .}}
+</head>
+  <body class="w-screen min-h-screen h-full bg-black">
+    {{ template "nav.html" .}}
+    <main>
+      <section class="p-10 mt-20 flex justify-center">
+        
+        {{ template "projects.html" .}}
+      </section>
+    </main>
+    {{ template "footer.html" .}}
+</body>
+</html>

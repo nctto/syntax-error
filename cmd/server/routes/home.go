@@ -26,7 +26,7 @@ func Home(c *gin.Context) {
 		return
 	}
 	projectsView := project.ProjectsToProjectView(projects)
-	c.HTML(200, "index.html", gin.H{
+	c.HTML(200, "home.html", gin.H{
 		"title": title, 
 		"session_user": user,
 		"projects": projectsView,
