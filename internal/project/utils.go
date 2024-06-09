@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 
+	cm "go-api/internal/comment"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-faker/faker/v4"
 	"go.mongodb.org/mongo-driver/bson"
@@ -49,11 +51,12 @@ func ProjectToProjectView(project Project) ProjectView {
 		AuthorID: project.AuthorID,
 		Link: project.Link,
 		Tags: project.Tags,
-		Votes: project.Votes,
+		VotesTotal: project.VotesTotal,
 		Voted: project.Voted,
-		Comments: project.Comments,
+		CommentsTotal: project.CommentsTotal,
 		Awards: project.Awards,
 		AwardsTotal: project.AwardsTotal,
+		Comments: cm.CommentsToCommentView(project.Comments),
 		CreatedAt: DateToString(project.CreatedAt),
 
 	}
@@ -130,10 +133,10 @@ func GetProjectPipeline(projectID primitive.ObjectID) []bson.M {
 			"as":           "awards",
 		}},
 		{"$addFields": bson.M{
-			"votes": bson.M{"$size": "$votes"},
+			"votes_total": bson.M{"$size": "$votes"},
 		}},
 		{"$addFields": bson.M{
-			"comments": bson.M{"$size": "$comments"},
+			"comments_total": bson.M{"$size": "$comments"},
 		}},
 		{"$addFields": bson.M{
 			"awards_total": bson.M{"$size": "$awards"},
@@ -172,10 +175,10 @@ func GetProjectsPipeline(page int, limit int, sortBy string) []bson.M {
 			"as":           "awards",
 		}},
 		{"$addFields": bson.M{
-			"votes": bson.M{"$size": "$votes"},
+			"votes_total": bson.M{"$size": "$votes"},
 		}},
 		{"$addFields": bson.M{
-			"comments": bson.M{"$size": "$comments"},
+			"comments_total": bson.M{"$size": "$comments"},
 		}},
 		{"$addFields": bson.M{
 			"awards_total": bson.M{"$size": "$awards"},

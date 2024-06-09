@@ -1,0 +1,19 @@
+<div class="flex flex-col">
+    <div>
+        <h5 class="text-slate-400 text-sm font-bold">
+            <a href="/user/{{ .AuthorID }}">{{ .AuthorID }}</a> <span class="text-xs text-slate-600">{{ .CreatedAt }}</span>
+        </h5>
+    </div>
+    <div class="text-slate-300">
+        <p>{{ .Content }}</p>
+    </div>
+    {{ if .Replies }}
+        <div class="flex flex-col gap-2">
+            {{ range .Replies }}
+                {{ template "comment.html" . }}
+            {{ end }}
+        </div>
+    {{ else }}
+        <div class="text-slate-600 text-xs">No replies yet.</div>
+    {{ end }}
+</div>

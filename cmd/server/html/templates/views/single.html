@@ -40,33 +40,12 @@
               </div>
               <div class="flex flex-row justify-center align-middle items-center">
                   <div class="text-slate-400 text-sm">
-                      <button class="text-md" hx-get="/ui/projects?page={{ .nextPage }}&sort_by={{.sortBy}}" hx-target="#projects" hx-swap="innerHTML">next page</button>
+                      <button class="text-md" hx-get="/ui/projects?page={{ .nextPage }}&sort_by={{.sortBy}}" hx-target="#projects" hx-swap="innerHTML">Add Comment</button>
                   </div>
               </div>
           </div>
         </div>
-      <div class="flex w-full flex-col max-w-xl gap-2">
-        <div>
-          <h2 class="text-slate-100 font-bold text-2xl">Comments:</h2>
-        </div>
-        <div class="bg-slate-950 flex flex-col rounded-xl p-5 w-full gap-2">
-          
-          <div class="bg-black rounded-lg p-2">
-            <p class="text-slate-500"><span><b>Eklsm says:</b>&nbsp;</span>some comment about anythong</p>
-            <p class="text-slate-500"></p>
-          </div>
-          <div class="bg-black rounded-lg p-2">
-            <p class="text-slate-500"><span><b>Eklsm says:</b>&nbsp;</span>some comment about anythong</p>
-            <p class="text-slate-500"></p>
-          </div>
-          <div class="bg-black rounded-lg p-2">
-            <p class="text-slate-500"><span><b>Eklsm says:</b>&nbsp;</span>some comment about anythong</p>
-            <p class="text-slate-500"></p>
-          </div>
-
-        </div>
-      </div>
-       
+      {{template "comments.html" .}}
       </section>
     </main>
     {{ template "footer.html" .}}

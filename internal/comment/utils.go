@@ -71,11 +71,31 @@ func CommentsDefaultQueryParams(c *gin.Context) (int, int, string) {
 	return p, l, sortBy
 }
 
-func GetCommentsPipeline(page int, limit int, sortBy string) []bson.M {
+func GetCommentsPipeline(page int, limit int, sortBy string, user interface{}, projectID primitive.ObjectID) []bson.M {
 	skip := int64(page*limit - limit)
 	pipeline := []bson.M{
+		{"$match": bson.M{"target_id": projectID}},
 		{"$skip": skip},
 		{"$limit": limit},
 	}
 	return pipeline
+}
+
+
+func CommentToCommentView(project Comment) CommentView {
+	return CommentView{
+		ID: ObjectIdToString(project.ID),
+		Content: project.Content,
+		AuthorID: project.AuthorID,
+		CreatedAt: DateToString(project.CreatedAt),
+
+	}
+}
+
+func CommentsToCommentView(projects []Comment) []CommentView {
+	var projectView []CommentView
+	for _, project := range projects {
+		projectView = append(projectView, CommentToCommentView(project))
+	}
+	return projectView
 }

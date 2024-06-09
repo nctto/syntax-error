@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"go-api/cmd/server/middleware"
+	cm "go-api/internal/comment"
 	pr "go-api/internal/project"
 
 	"github.com/gin-contrib/sessions"
@@ -70,6 +71,15 @@ func SingleProject(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 			return
 		}
+
+		comments, err := cm.DbGetAllComments(1, 10, "best", user, id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+			return
+		}
+
+		commentsView := cm.CommentsToCommentView(comments)
+
 		projectView := pr.ProjectToProjectView(project)
 		c.HTML(200, "single.html", gin.H{
 			"title": title, 
@@ -78,12 +88,13 @@ func SingleProject(c *gin.Context) {
 			"Content": projectView.Content,
 			"AuthorID": projectView.AuthorID,
 			"CreatedAt": projectView.CreatedAt,
-			"Votes": projectView.Votes,
+			"VotesTotal": projectView.VotesTotal,
 			"Voted": projectView.Voted,
-			"Comments": projectView.Comments,
+			"CommentsTotal": projectView.CommentsTotal,
 			"Awards": projectView.Awards,
 			"AwardsTotal": projectView.AwardsTotal,
 			"Tags": projectView.Tags,
+			"Comments": commentsView,
 		})
 }
 
