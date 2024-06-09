@@ -11,5 +11,11 @@
         <div class="flex justify-center">
             <p class="">website by me</p>
         </div>
-    </div> 
+    </div>
+
+    <script>
+        document.getElementById('logout').addEventListener('click', function(){
+            Cookies.remove('auth-session');
+        });
+    </script>
 </section>

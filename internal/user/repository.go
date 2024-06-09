@@ -44,14 +44,20 @@ func DbGetAllUsers(page string, limit string) ([]User, error) {
 	return users, nil
 }
 
+func DbGetUser(user User) (User, error) {
+	var u User
+	err := userCollection.FindOne(context.Background(), bson.M{"username": user.Username}).Decode(&u)
+	return u, err
+}
+
 func DbGetUserID(id primitive.ObjectID) (User, error) {
 	var user User
 	err := userCollection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&user)
 	return user, err
 }
 
-func DbUserExists(projectID primitive.ObjectID, user string) (bool, error) {
-	count, err := userCollection.CountDocuments(context.Background(), bson.M{"project_id": projectID, "author_id": user})
+func DbUserExists(username string) (bool, error) {
+	count, err := userCollection.CountDocuments(context.Background(), bson.M{"username": username })
 	if err != nil {
 		fmt.Println(err)
 		return false, err
@@ -78,25 +84,4 @@ func DbUpdateUser(id primitive.ObjectID, user User) error {
 func DbDeleteUser(id primitive.ObjectID) error {
 	_, err := userCollection.DeleteOne(context.Background(), bson.M{"_id": id})
 	return err
-}
-
-func DbDeleteUserByAuthor(projectID primitive.ObjectID, authorID string) error {
-	_, err := userCollection.DeleteOne(context.Background(), bson.M{"project_id": projectID, "author_id": authorID})
-	return err
-}
-
-
-func DbGetProjectUsers(projectID primitive.ObjectID) (int32, error) {
-	var users []User
-	cursor, err := userCollection.Find(context.Background(), bson.M{"project_id": projectID})
-	if err != nil {
-		return 0, err
-	}
-	defer cursor.Close(context.Background())
-	for cursor.Next(context.Background()) {
-		var user User
-		cursor.Decode(&user)
-		users = append(users, user)
-	}
-	return int32(len(users)), nil	
 }

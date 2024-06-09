@@ -52,6 +52,8 @@ func ProjectToProjectView(project Project) ProjectView {
 		Votes: project.Votes,
 		Voted: project.Voted,
 		Comments: project.Comments,
+		Awards: project.Awards,
+		AwardsTotal: project.AwardsTotal,
 		CreatedAt: DateToString(project.CreatedAt),
 
 	}

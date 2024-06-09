@@ -9,10 +9,11 @@ import (
 	"net/url"
 	"os"
 
+	"go-api/cmd/server/authenticator"
+	"go-api/internal/user"
+
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-
-	"go-api/cmd/server/authenticator"
 )
 
 // Handler for our callback.
@@ -49,6 +50,24 @@ func Callback(auth *authenticator.Authenticator) gin.HandlerFunc {
 			ctx.String(http.StatusInternalServerError, err.Error())
 			return
 		}
+
+		// Check if user exists in the database
+		userProfile := user.User{
+			Username: profile["nickname"].(string),
+		}
+
+		_, err = user.DbGetUser(userProfile)
+		if err != nil {
+			// Create user if not exists
+			_, err = user.DbCreateUser(userProfile)
+			if err != nil {
+				ctx.String(http.StatusInternalServerError, err.Error())
+				return
+			}
+		}
+
+
+
 		// Redirect to logged in page.
 		ctx.Redirect(http.StatusTemporaryRedirect, "/")
 	}
