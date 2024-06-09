@@ -54,7 +54,7 @@ func CreateVote(c *gin.Context) {
 		return
 	}
 	
-	project,err := project.DbGetProjectID(id)
+	project,err := project.DbGetProjectID(id, user)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "Project not found"})
 		return

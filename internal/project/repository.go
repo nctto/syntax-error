@@ -37,10 +37,35 @@ func DbGetAllProjects(page int, limit int, sortBy string, user interface{} ) ([]
 	return projects, nil
 }
 
-func DbGetProjectID(id primitive.ObjectID) (Project, error) {
+func DbGetProjectID(id primitive.ObjectID, user interface{}) (Project, error) {
+	
+	pipeline := GetProjectPipeline(id)
+	if user != nil {
+		nickname := user.(map[string]interface{})["nickname"].(string)
+		pipeline = AddProjectsVotedPipeline(pipeline, nickname)
+	}
+
 	var project Project
-	err := projectCollection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&project)
-	return project, err
+	cursor, err := projectCollection.Aggregate(context.Background(), pipeline)
+	if err != nil {
+		return project, err
+	}
+
+	defer cursor.Close(context.Background())
+
+	for cursor.Next(context.Background()) {
+		cursor.Decode(&project)
+	}
+
+	return project, nil
+}
+
+func DbProjectExists(id primitive.ObjectID) (bool, error) {
+	count, err := projectCollection.CountDocuments(context.Background(), bson.M{"_id": id})
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
 }
 
 func DbCreateProject(project Project) (primitive.ObjectID, error) {

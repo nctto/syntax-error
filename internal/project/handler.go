@@ -2,7 +2,6 @@ package project
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -62,6 +61,10 @@ func GetProjects(c *gin.Context) {
 }
 
 func GetProjectByID(c *gin.Context) {
+	
+	session := sessions.Default(c)
+	user := session.Get("profile")
+	
 	idParam := c.Param("id")
 	id, err := primitive.ObjectIDFromHex(idParam)
 	if err != nil {
@@ -69,10 +72,8 @@ func GetProjectByID(c *gin.Context) {
 		return
 	}
 
-	fmt.Println("ID", id)
-	project, err := DbGetProjectID(id)
+	project, err := DbGetProjectID(id, user)
 	if err != nil {
-		fmt.Println("Error", err.Error())
 		c.JSON(http.StatusNotFound, gin.H{"message": "Project not found"})
 		return
 	}

@@ -95,14 +95,19 @@ func UiCreateVote(c *gin.Context) {
 		return
 	}
 	
-	project,err := pr.DbGetProjectID(id)
+	exists ,err := pr.DbProjectExists(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "Project not found"})
 		return
 	}
+	if !exists {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Project not found"})
+		return
+	}
+
 	
 	var newVote vt.Vote
-	newVote.ProjectID = project.ID
+	newVote.ProjectID = id
 	newVote.AuthorID = user.(map[string]interface{})["nickname"].(string)
 	newVote.CreatedAt = primitive.NewDateTimeFromTime(time.Now())
 	vote,err := vt.DbVoteExists(newVote.ProjectID, newVote.AuthorID)

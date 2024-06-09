@@ -108,6 +108,46 @@ func ProjectsDefaultQueryParams(c *gin.Context) (int, int, string) {
 	return p, l, sortBy
 }
 
+func GetProjectPipeline(projectID primitive.ObjectID) []bson.M {
+	pipeline := []bson.M{
+		{"$match": bson.M{"_id": projectID}},
+		{"$lookup": bson.M{
+			"from":         "votes",
+			"localField":   "_id",
+			"foreignField": "project_id",
+			"as":           "votes",
+		}},
+		{"$lookup": bson.M{
+			"from":         "comments",
+			"localField":   "_id",
+			"foreignField": "target_id",
+			"as":           "comments",
+		}},
+		{"$lookup": bson.M{
+			"from":         "awards",
+			"localField":   "_id",
+			"foreignField": "target_id",
+			"as":           "awards",
+		}},
+		{"$addFields": bson.M{
+			"votes": bson.M{"$size": "$votes"},
+		}},
+		{"$addFields": bson.M{
+			"comments": bson.M{"$size": "$comments"},
+		}},
+		{"$addFields": bson.M{
+			"awards_total": bson.M{"$size": "$awards"},
+		}},
+		{"$addFields": bson.M{
+			// total awards and first 5 awards
+			"awards": bson.M{"$slice": []interface{}{"$awards", 3}},
+		}},
+	}
+	return pipeline
+
+}
+
+
 func GetProjectsPipeline(page int, limit int, sortBy string) []bson.M {
 	skip := int64(page*limit - limit)
 	pipeline := []bson.M{
