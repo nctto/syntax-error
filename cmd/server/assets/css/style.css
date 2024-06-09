@@ -1,0 +1,11 @@
+.voted-true {
+    background: #FFD700 !important;
+}
+
+.voted-false {
+    background: #A0AEC0 !important;
+}
+
+.tagify {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}

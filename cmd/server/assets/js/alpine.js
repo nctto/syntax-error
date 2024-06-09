@@ -21,7 +21,7 @@ function ValidateInput(e) {
       }
     }
 
-    if (e.target.name === 'tags') {
+    if (e.target.name === 'tagify') {
       const tags = e.target.value.split(',');
       if (tags.length > 3) {
         errors.push({ target: e.target, message: 'Only 3 tags are allowed' });
@@ -51,12 +51,18 @@ function load() {
   for (var i = 0; i < inputs.length; i++) {
     inputs[i].addEventListener('change', ValidateInput);
   }
-  new Tagify(document.querySelector('input[name=tags]'), {
-    whitelist: ['php'],
-    dropdown: {
-      classname: 'color-blue-500',
-    },
+  new Tagify(document.querySelector('input[name=tagify]'), {
+    whitelist: [],
+    maxTags: 5,
+    originalInputValueFormat: (valuesArr) =>
+      valuesArr.map((item) => item.value).join(','),
   });
+
+  document
+    .querySelector('input[name=tagify]')
+    .addEventListener('change', function (e) {
+      document.querySelector('input[name=tags]').value = e.target.tagifyValue;
+    });
 
   document.querySelector('form').addEventListener('submit', function (e) {
     e.preventDefault();
@@ -65,7 +71,6 @@ function load() {
       const input = inputs[i];
       errors.push(...ValidateInput({ target: input }));
     }
-
     if (errors.length > 0) {
       alert('Please fix the errors before submitting the projects');
     } else {

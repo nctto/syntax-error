@@ -1,6 +1,7 @@
 package project
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -50,7 +51,9 @@ func ProjectToProjectView(project Project) ProjectView {
 		Tags: project.Tags,
 		Votes: project.Votes,
 		Voted: project.Voted,
+		Comments: project.Comments,
 		CreatedAt: DateToString(project.CreatedAt),
+
 	}
 }
 
@@ -63,16 +66,15 @@ func ProjectsToProjectView(projects []Project) []ProjectView {
 }
 
 func AddProjectsPipelineSorter(pipeline []bson.M, sortBy string) []bson.M {
-	if sortBy != "" {
-		pipeline = append(pipeline, bson.M{"$sort": bson.M{sortBy: -1}})
-	} else if sortBy == "new"{
+	fmt.Println("Sort by", sortBy)
+	if sortBy == "new"{
 		pipeline = append(pipeline, bson.M{"$sort": bson.M{"created_at": -1}})
 	} else if sortBy == "old"{
 		pipeline = append(pipeline, bson.M{"$sort": bson.M{"created_at": 1}})
-	} else if sortBy == "best"{
-		pipeline = append(pipeline, bson.M{"$sort": bson.M{"votes": -1}})
 	} else if sortBy == "unvoted"{
 		pipeline = append(pipeline, bson.M{"$sort": bson.M{"votes": 1}})
+	} else {
+		pipeline = append(pipeline, bson.M{"$sort": bson.M{"votes": -1}})
 	}
 	return pipeline
 }
@@ -94,12 +96,13 @@ func ProjectsDefaultQueryParams(c *gin.Context) (int, int, string) {
 		l,_ = strconv.Atoi(limit)
 	}
 	if sortBy == "" {
-		sortBy = "top"
+		sortBy = "best"
 	}
 
 	if l > 100 {
 		l = 100
 	}
+	fmt.Println("Page", p, "Limit", l, "Sort by", sortBy)
 	return p, l, sortBy
 }
 
@@ -114,18 +117,30 @@ func GetProjectsPipeline(page int, limit int, sortBy string) []bson.M {
 			"foreignField": "project_id",
 			"as":           "votes",
 		}},
+		{"$lookup": bson.M{
+			"from":         "comments",
+			"localField":   "_id",
+			"foreignField": "target_id",
+			"as":           "comments",
+		}},
+		{"$lookup": bson.M{
+			"from":         "awards",
+			"localField":   "_id",
+			"foreignField": "target_id",
+			"as":           "awards",
+		}},
 		{"$addFields": bson.M{
 			"votes": bson.M{"$size": "$votes"},
 		}},
-		{"$project": bson.M{
-			"id":    "$_id",
-			"title": "$title",
-			"content": "$content",
-			"author_id": "$author_id",
-			"link": "$link",
-			"tags": "$tags",
-			"created_at": "$created_at",
-			"votes": "$votes",
+		{"$addFields": bson.M{
+			"comments": bson.M{"$size": "$comments"},
+		}},
+		{"$addFields": bson.M{
+			"awards_total": bson.M{"$size": "$awards"},
+		}},
+		{"$addFields": bson.M{
+			// total awards and first 5 awards
+			"awards": bson.M{"$slice": []interface{}{"$awards", 3}},
 		}},
 	}
 	return pipeline

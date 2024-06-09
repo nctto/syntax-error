@@ -8,7 +8,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
-
+  <link rel="stylesheet" href="/assets/css/style.css">  
   <link rel="manifest" href="/assets/site.webmanifest">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/fontawesome.min.css" integrity="sha384-BY+fdrpOd3gfeRvTSMT+VUZmA728cfF9Z2G42xpaRkUGu2i3DyzpTURDo5A6CaLK" crossorigin="anonymous">
   <script src="https://unpkg.com/htmx.org@1.9.12"></script>
@@ -19,31 +19,37 @@
   <body class="w-screen min-h-screen h-full bg-black">
    {{ template "nav.html" .}}
     {{ if .session_user }}
-    <section class="p-10 mt-20">
-      <div class="flex flex-col gap-2">
+    <section class="p-10 mt-20 flex justify-center">
+      <div class="flex flex-col gap-2 max-w-2xl w-full p-10 border-slate-600 border rounded-lg">
         <div>
-          <a href="/" class="text-white text-xs">go back</a>
+          <a href="/" class="text-white text-xs flex flex-row items-center align-middle gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+            </svg>
+            go back
+          </a>
         </div>
         <div class="flex flex-col gap-4">
           <h1 class="text-3xl text-white font-bold">Submit</h1>
-          <form id="mainForm" hx-post="/create" class="flex flex-col gap-3" hx-trigger="submit" hx-ext="json-enc" hx-target="#response" hx-swap="#mainForm">
+          <form id="mainForm" hx-post="/ui/projects" class="flex flex-col gap-3" hx-trigger="submit" hx-ext="json-enc" hx-target="#response" hx-swap="#mainForm" hx-validate>
             <div class="form-control w-full flex flex-col gap-1">
-              <label for="title" class="text-white"><small>Title</small></label>
-              <input type="text" name="title" placeholder="" class="p-2 border border-slate-900 bg-black rounded-lg text-slate-200">
+              <label for="title" class="text-white"><small>Give it a title</small></label>
+              <input type="text" name="title" placeholder="" hx-trigger="validate()" class="p-2 border border-slate-900 bg-black rounded-lg text-slate-200" required >
             </div>
             <div class="form-control w-full flex flex-col gap-1">
-              <label for="content" class="text-white"><small>Content</small></label>
-              <input type="text" name="content" placeholder="" class="p-2 border border-slate-900 bg-black rounded-lg text-slate-200">
+              <label for="content" class="text-white"><small>Description</small></label>
+              <textarea type="text" name="content" placeholder="" class="p-2 border border-slate-900 bg-black rounded-lg text-slate-200" required ></textarea>
             </div>
             <div class="form-control w-full flex flex-col gap-1">
               <label for="link" class="text-white"><small>Link</small></label>
-              <input type="text" name="link" placeholder="" class="p-2 border border-slate-900 bg-black rounded-lg text-slate-200">
+              <input type="text" name="link" placeholder="" class="p-2 border border-slate-900 bg-black rounded-lg text-slate-200" required >
             </div>
               <div class="form-control w-full flex flex-col">
-                <label for="tags" class="text-white"><small>Tags</small></label>
-                <input type="text" name="tags" class="p-2 border border-slate-900 bg-black rounded-lg text-slate-200"  placeholder="          ">
+                <label for="tags" class="text-white"><small>Add some tags</small></label>
+                <input type="text" name="tagify" class="p-2 border border-slate-900 bg-black rounded-lg text-slate-200"  placeholder="" required>
+                <input type="text" name="tags" hidden disabled required>
               </div>
-              <button id="submit" type="submit" class="p-2 bg-slate-900 text-white rounded-lg">submit</button>
+              <button id="submit" type="submit" class="p-2 bg-slate-900 text-white cursor-pointer rounded-lg hover:bg-red-500">submit</button>
           </form>
           <div id="response" class="flex flex-col gap-2"></div>
       </div>

@@ -5,12 +5,15 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
+
+
 
 func FakeProject() string {
 	project := fakeProject()
@@ -48,10 +51,7 @@ func GetProjects(c *gin.Context) {
 
 	session := sessions.Default(c)
 	user := session.Get("profile")
-
-	nickname := user.(map[string]interface{})["nickname"]
-	fmt.Println("GetProjects Nick", nickname)
-
+	
 	page, limit, sortBy := ProjectsDefaultQueryParams(c)
 	projects, err := DbGetAllProjects(page, limit, sortBy, user)
 	if err != nil {
@@ -88,10 +88,17 @@ func CreateProject(c *gin.Context) {
 		return
 	}
 
-	var newProject Project
-	if err := c.BindJSON(&newProject); err != nil {
+	var project = ProjectIncoming{}
+	if err := c.BindJSON(&project); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
+	}
+
+	var newProject = Project{
+		Title: project.Title,
+		Content: project.Content,
+		Link: project.Link,
+		Tags: strings.Split(project.Tags, ","),
 	}
 
 	newProject.AuthorID = user.(map[string]interface{})["id"].(string)

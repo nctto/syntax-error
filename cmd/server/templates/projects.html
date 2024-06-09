@@ -1,4 +1,4 @@
-<div id="projects" class="flex flex-col gap-4" hx-swap="innerHTML">
+<div id="projects" class="flex flex-col gap-4 max-w-xl" hx-swap="innerHTML">
     <div class="flex flex-row justify-between">
         <div class="text-sm text-slate-100 flex flex-row gap-1">
             <button class="flex flex-row gap-1 text-slate-400 font-bold justify-start align-middle items-center" hx-get="/ui/projects?page=1&sort_by=new" hx-target="#projects" hx-swap="outerHTML">
@@ -14,15 +14,14 @@
                 </svg>
                 Best
             </button>
+        </div>
+        <div class="text-sm text-slate-100">
             <a class="flex flex-row gap-1 text-slate-400 font-bold justify-start align-middle items-center" href="/create">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>
                 Submit
             </a>
-        </div>
-        <div class="text-sm text-slate-100">
-            <a class="text-slate-400 font-bold" href="/projects?sortBy=desc" >Sort By</a>
         </div>
     </div>
     <div id="projects" class="flex flex-col gap-3">
@@ -32,7 +31,7 @@
     </div>
     <div class="flex flex-row justify-center align-middle items-center">
         <div class="text-slate-400 text-sm">
-            <button class="text-md" hx-get="/ui/projects?page={{ .nextPage }}&sort_by={{.sortBy}}" hx-target="#projects">load more</button>
+            <button class="text-md" hx-get="/ui/projects?page={{ .nextPage }}&sort_by={{.sortBy}}" hx-target="#projects" hx-swap="innerHTML">load more</button>
         </div>
     </div>
 </div>

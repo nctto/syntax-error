@@ -80,6 +80,12 @@ func DbDeleteVote(id primitive.ObjectID) error {
 	return err
 }
 
+func DbDeleteVoteByAuthor(projectID primitive.ObjectID, authorID string) error {
+	_, err := voteCollection.DeleteOne(context.Background(), bson.M{"project_id": projectID, "author_id": authorID})
+	return err
+}
+
+
 func DbGetProjectVotes(projectID primitive.ObjectID) (int32, error) {
 	var votes []Vote
 	cursor, err := voteCollection.Find(context.Background(), bson.M{"project_id": projectID})

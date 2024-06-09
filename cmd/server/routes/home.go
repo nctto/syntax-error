@@ -38,7 +38,7 @@ func Home(c *gin.Context) {
 }
 
 
-func UiCreateProjects(c *gin.Context) {
+func CreateForm(c *gin.Context) {
 		session := sessions.Default(c)
 		user := session.Get("profile")
 		if user == nil {
@@ -54,5 +54,5 @@ func UiCreateProjects(c *gin.Context) {
 
 func InitializeHome(router *gin.Engine) {
 	router.GET("/", Home)
-	router.GET("/create", middleware.IsAuthenticated, UiCreateProjects)
+	router.GET("/create", middleware.IsAuthenticated, CreateForm)
 }

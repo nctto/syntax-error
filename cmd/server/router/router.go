@@ -36,6 +36,7 @@ func keyFunc(c *gin.Context) string {
 func errorHandler(c *gin.Context, rate ratelimit.Info) {
 	c.JSON(http.StatusTooManyRequests, gin.H{"error": "too many requests"})
 }
+
 func New(auth *authenticator.Authenticator) *gin.Engine {
 
 	router := gin.Default()

@@ -71,7 +71,18 @@ func CreateVote(c *gin.Context) {
 	}
 	
 	if vote {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Vote already exists"})
+		err = DbDeleteVoteByAuthor(newVote.ProjectID, newVote.AuthorID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+			return
+		}
+
+		numberOfVotes, err := DbGetProjectVotes(newVote.ProjectID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"ID": projectId ,"Votes": numberOfVotes, "Voted": false})
 		return
 	}
 
@@ -86,7 +97,7 @@ func CreateVote(c *gin.Context) {
 		return
 	}
 	
-	c.JSON(http.StatusCreated, numberOfVotes)
+	c.JSON(http.StatusCreated, gin.H{"ID": projectId ,"Votes": numberOfVotes, "Voted": true})
 }
 
 func UpdateVote(c *gin.Context) {
