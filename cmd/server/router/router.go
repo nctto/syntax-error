@@ -7,6 +7,10 @@ import (
 
 	"go-api/cmd/server/authenticator"
 
+	api "go-api/cmd/server/routes/api"
+	pages "go-api/cmd/server/routes/pages"
+	"go-api/cmd/server/routes/ui"
+
 	ratelimit "github.com/JGLTechnologies/gin-rate-limit"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -57,9 +61,13 @@ func New(auth *authenticator.Authenticator) *gin.Engine {
 	router.LoadHTMLGlob("/Users/rfcku/sites/rfcku/go-api/cmd/server/html/templates/**/*")
 	
 	routes.InitializeAuth(router, auth)
-	routes.InitializeHome(router)
-	routes.InitializeProjects(router)
-	routes.InitializeVotes(router)
-	routes.InitializeUI(router)
+	api.InitializeProjects(router)
+	api.InitializeVotes(router)
+	ui.InitializeCommentsUI(router)
+	ui.InitializeVotesUI(router)
+	ui.InitializeProjectsUI(router)
+	pages.InitializeCreatePage(router)
+	pages.InitializeHomePage(router)
+	pages.InitializeSingleProjectPage(router)
 	return router
 }

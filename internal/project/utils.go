@@ -2,9 +2,9 @@ package project
 
 import (
 	"fmt"
-	"strconv"
-
 	cm "go-api/internal/comment"
+	utils "go-api/pkg/utils"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-faker/faker/v4"
@@ -39,10 +39,6 @@ func ObjectIdToString(id primitive.ObjectID) string {
 	return id.Hex()
 }
 
-func DateToString(date primitive.DateTime) string {
-	return date.Time().String()
-}
-
 func ProjectToProjectView(project Project) ProjectView {
 	return ProjectView{
 		ID: ObjectIdToString(project.ID),
@@ -57,7 +53,7 @@ func ProjectToProjectView(project Project) ProjectView {
 		Awards: project.Awards,
 		AwardsTotal: project.AwardsTotal,
 		Comments: cm.CommentsToCommentView(project.Comments),
-		CreatedAt: DateToString(project.CreatedAt),
+		CreatedAt: utils.DateToString(project.CreatedAt),
 
 	}
 }

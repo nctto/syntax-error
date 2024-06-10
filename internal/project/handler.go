@@ -102,7 +102,7 @@ func CreateProject(c *gin.Context) {
 		Tags: strings.Split(project.Tags, ","),
 	}
 
-	newProject.AuthorID = user.(map[string]interface{})["id"].(string)
+	newProject.AuthorID = user.(map[string]interface{})["nickname"].(string)
 	newProject.CreatedAt = primitive.NewDateTimeFromTime(time.Now())
 	if !RequiredFields(newProject) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Missing required fields"})

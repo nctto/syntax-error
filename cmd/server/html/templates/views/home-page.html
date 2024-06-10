@@ -2,15 +2,15 @@
 <html lang="en-us">
  <head>
   <title>{{ .title }}</title>
-  {{ template "header.html" .}}
+  {{ template "block-header.html" .}}
 </head>
   <body class="w-screen min-h-screen h-full bg-black">
-    {{ template "nav.html" .}}
+    {{ template "block-nav.html" .}}
     <main>
       <section class="p-10 mt-20 flex justify-center">
-        {{ template "projects.html" .}}
+        {{ template "list-projects.html" .}}
       </section>
     </main>
-    {{ template "footer.html" .}}
+    {{ template "block-footer.html" .}}
 </body>
 </html>

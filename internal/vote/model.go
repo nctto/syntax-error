@@ -5,7 +5,6 @@ import (
 )
 
 
-
 type Vote struct {
 	ID      	primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 	ProjectID 	primitive.ObjectID `json:"project_id" bson:"project_id"`

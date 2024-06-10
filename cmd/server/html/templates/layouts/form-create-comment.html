@@ -1,0 +1,11 @@
+<div id="comments-{{.ID }}" class="flex flex-col w-full">
+    <form id="comment-form" class="flex flex-col gap-2 w-full max-w-xl" hx-post="/ui/comment/{{ .targetID }}" hx-target="#comments-{{.ID}}" hx-swap="outerHTML">
+        <div class="flex flex-col gap-2">
+            <label for="comment" class="text-slate-100 text-sm">Comment:</label>
+            <textarea id="comment" name="comment" class="bg-slate-950 text-slate-100 p-2 rounded-xl" rows="3" cols="50" maxlength="250" required></textarea>
+        </div>
+        <div class="flex flex-row justify-end align-middle items-center">
+            <button class="text-md bg-red-500 rounded-xl text-slate-300 p-3 text-xs" type="submit">Submit</button>
+        </div>
+    </form>
+</div>

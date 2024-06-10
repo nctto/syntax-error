@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en-us">
+
+  <head>
+  <title>{{ .title }}</title>
+  {{ template "block-header.html" .}}
+  </head>
+  
+  <body class="w-screen min-h-screen h-full bg-black">
+   {{ template "block-nav.html" .}}
+    {{ if .session_user }}
+    <section class="p-10 mt-20 flex justify-center">
+      <div class="flex flex-col gap-2 max-w-2xl w-full p-10 border-slate-600 border rounded-lg">
+        <div>
+          <a href="/" class="text-white text-xs flex flex-row items-center align-middle gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+            </svg>
+            go back
+          </a>
+        </div>
+        {{ template "form-create-project.html" .}}
+    </section>
+    {{ end }}
+    {{ template "block-footer.html" .}}
+    <link rel="stylesheet" href="https://yaireo.github.io/tagify/dist/tagify.css">
+    <script src="https://yaireo.github.io/tagify/dist/tagify.js"></script>
+    <script src="/assets/js/alpine.js"></script>
+
+</body>
+</html>

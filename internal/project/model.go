@@ -24,13 +24,6 @@ type Project struct {
 	AwardsTotal  int 			`json:"awards_total" bson:"awards_total,omitempty"`
 }
 
-type ProjectIncoming struct {
-	Title    string `json:"title" bson:"title"`
-	Content  string `json:"content" bson:"content"`
-	Link	 string `json:"link" bson:"link"`
-	Tags	 string `json:"tags" bson:"tags"`
-}
-
 type ProjectView struct {
 	ID      string `json:"id" bson:"_id,omitempty"`
 	Title    string `json:"title" bson:"title"`
@@ -45,4 +38,11 @@ type ProjectView struct {
 	Awards []aw.Award `json:"awards" bson:"awards,omitempty"`
 	AwardsTotal int `json:"awards_total" bson:"awards_total,omitempty"`
 	CreatedAt string `json:"created_at" bson:"created_at"`
+}
+
+type ProjectIncoming struct {
+	Title    string `json:"title" bson:"title"`
+	Content  string `json:"content" bson:"content"`
+	Link	 string `json:"link" bson:"link"`
+	Tags	 string `json:"tags" bson:"tags"`
 }

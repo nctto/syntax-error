@@ -16,3 +16,11 @@ type Award struct {
 	AuthorID 	string `json:"author_id" bson:"author_id"`
 	CreatedAt  primitive.DateTime `json:"created_at" bson:"created_at"`
 }
+
+type AwardView struct {
+	ID      	string `json:"id" bson:"_id,omitempty"`
+	TargetID 	string `json:"target_id" bson:"target_id"`
+	TypeID 		string `json:"type" bson:"type"`
+	AuthorID 	string `json:"author_id" bson:"author_id"`
+	CreatedAt  string `json:"created_at" bson:"created_at"`
+}

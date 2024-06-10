@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 
+	utils "go-api/pkg/utils"
+
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -25,10 +27,6 @@ func RequiredFields(comment Comment) bool {
 
 func ObjectIdToString(id primitive.ObjectID) string {
 	return id.Hex()
-}
-
-func DateToString(date primitive.DateTime) string {
-	return date.Time().String()
 }
 
 func AddCommentsPipelineSorter(pipeline []bson.M, sortBy string) []bson.M {
@@ -87,7 +85,7 @@ func CommentToCommentView(project Comment) CommentView {
 		ID: ObjectIdToString(project.ID),
 		Content: project.Content,
 		AuthorID: project.AuthorID,
-		CreatedAt: DateToString(project.CreatedAt),
+		CreatedAt: utils.DateToString(project.CreatedAt),
 
 	}
 }
