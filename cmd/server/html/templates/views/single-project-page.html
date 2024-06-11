@@ -21,9 +21,6 @@
               <div id="projects" class="flex flex-col gap-3">
                   {{ template "single-project.html" .}}
               </div>
-              <div class="flex flex-row justify-center align-middle items-center">
-                <button class="text-md" hx-get="/ui/comment/form/{{ .ID }}" hx-target="#comment-input" hx-swap="innerHTML">Add Comment</button>
-              </div>
           </div>
         </div>
       {{template "list-comments.html" .}}

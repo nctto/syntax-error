@@ -33,13 +33,15 @@ func CreateComment(c *gin.Context) {
 	}
 
 	comment.TargetID = target
+	comment.AuthorID = user.(map[string]interface{})["nickname"].(string)
+	comment.CreatedAt = primitive.NewDateTimeFromTime(time.Now())
+
+	
 	if !RequiredFields(comment) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Missing required fields"})
 		return
 	}
 	
-	comment.AuthorID = user.(map[string]interface{})["id"].(string)
-	comment.CreatedAt = primitive.NewDateTimeFromTime(time.Now())
 
 	id, err := DbCreateComment(comment)
 	if err != nil {
