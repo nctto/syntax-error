@@ -51,7 +51,7 @@ func DbGetLikeID(id primitive.ObjectID) (Like, error) {
 }
 
 func DbLikeExists(commentID primitive.ObjectID, user string) (bool, error) {
-	count, err := likeCollection.CountDocuments(context.Background(), bson.M{"comment_id": commentID, "author_id": user})
+	count, err := likeCollection.CountDocuments(context.Background(), bson.M{"target_id": commentID, "author_id": user})
 	if err != nil {
 		fmt.Println(err)
 		return false, err
@@ -81,14 +81,14 @@ func DbDeleteLike(id primitive.ObjectID) error {
 }
 
 func DbDeleteLikeByAuthor(commentID primitive.ObjectID, authorID string) error {
-	_, err := likeCollection.DeleteOne(context.Background(), bson.M{"comment_id": commentID, "author_id": authorID})
+	_, err := likeCollection.DeleteOne(context.Background(), bson.M{"target_id": commentID, "author_id": authorID})
 	return err
 }
 
 
-func DbGetCommentLikes(commentID primitive.ObjectID) (int32, error) {
+func DbGetTargetLikes(commentID primitive.ObjectID) (int32, error) {
 	var likes []Like
-	cursor, err := likeCollection.Find(context.Background(), bson.M{"comment_id": commentID})
+	cursor, err := likeCollection.Find(context.Background(), bson.M{"target_id": commentID})
 	if err != nil {
 		return 0, err
 	}
@@ -99,4 +99,13 @@ func DbGetCommentLikes(commentID primitive.ObjectID) (int32, error) {
 		likes = append(likes, like)
 	}
 	return int32(len(likes)), nil	
+}
+
+func DbTargetExists(id primitive.ObjectID) (bool, error) {
+	count, err := likeCollection.CountDocuments(context.Background(), bson.M{"target_id": id})
+	if err != nil {
+		fmt.Println(err)
+		return false, err
+	}
+	return count > 0, nil
 }

@@ -77,7 +77,7 @@ func CreateLike(c *gin.Context) {
 			return
 		}
 
-		numberOfLikes, err := DbGetCommentLikes(newLike.TargetID)
+		numberOfLikes, err := DbGetTargetLikes(newLike.TargetID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 			return
@@ -91,7 +91,7 @@ func CreateLike(c *gin.Context) {
 		return
 	}
 
-	numberOfLikes, err := DbGetCommentLikes(newLike.TargetID)
+	numberOfLikes, err := DbGetTargetLikes(newLike.TargetID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return

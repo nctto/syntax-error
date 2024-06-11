@@ -20,4 +20,5 @@ type CommentView struct {
 	Content 	string `json:"content"`
 	Replies		[]CommentView `json:"replies"`
 	CreatedAt  string `json:"created_at"`
+	Liked		bool `json:"liked"`
 }

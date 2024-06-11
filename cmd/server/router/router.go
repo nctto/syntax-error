@@ -66,6 +66,7 @@ func New(auth *authenticator.Authenticator) *gin.Engine {
 	ui.InitializeCommentsUI(router)
 	ui.InitializeVotesUI(router)
 	ui.InitializeProjectsUI(router)
+	ui.InitializeLikesUI(router)
 	pages.InitializeCreatePage(router)
 	pages.InitializeHomePage(router)
 	pages.InitializeSingleProjectPage(router)
