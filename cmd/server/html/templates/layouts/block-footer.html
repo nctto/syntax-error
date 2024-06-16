@@ -12,6 +12,7 @@
             <p class="">website by me</p>
         </div>
     </div>
+    {{ if .session_user }}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('logout').addEventListener('click', function () {
@@ -22,4 +23,5 @@
 
         });
     </script>
+    {{ end }}
 </section>
