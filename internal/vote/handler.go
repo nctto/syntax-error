@@ -2,6 +2,7 @@ package vote
 
 import (
 	"fmt"
+	"go-api/internal/comment"
 	"go-api/internal/project"
 	"net/http"
 	"time"
@@ -41,7 +42,7 @@ func GetVoteByID(c *gin.Context) {
 
 func SubmitVote(target string, targetID primitive.ObjectID, authorID string) (int32, bool, error) {
 
-	if target == "project" {
+	if target == "p" {
 		exists, err := project.DbProjectExists(targetID)
 		if err != nil {
 			return 0, false, err
@@ -50,6 +51,19 @@ func SubmitVote(target string, targetID primitive.ObjectID, authorID string) (in
 			return 0, false, fmt.Errorf("project not found")
 		}	
 	}
+
+	if target == "c" {
+		exists, err := comment.DbCommentExists(targetID)
+		if err != nil {
+			return 0, false, err
+		}
+		if !exists {
+			return 0, false, fmt.Errorf("comment not found")
+		}
+	
+	}
+
+	fmt.Print("TargetID: ", targetID)
 	var voted bool
 	var v Vote
 	v.TargetID = targetID
@@ -59,14 +73,20 @@ func SubmitVote(target string, targetID primitive.ObjectID, authorID string) (in
 	if err != nil {
 		return 0, false, err
 	}
-	
+	fmt.Println("Vote exists: ", vote)
 	if vote {
 		err = DbDeleteVoteByAuthor(v.TargetID, v.AuthorID)
 		if err != nil {
 			return 0, true, err
 		}
 		voted = false
-	} else { voted = true}
+	} else { 
+		_,err := DbCreateVote(v)
+		if err != nil {
+			return 0, false, err
+		}
+		voted = true
+	}
 	votes, err := DbGetTargetVotes(v.TargetID)
 	if err != nil {
 		return 0, voted, err
@@ -90,7 +110,7 @@ func CreateVote(c *gin.Context) {
 		return
 	}
 	
-	votes, voted, err := SubmitVote("project", id, user.(map[string]interface{})["nickname"].(string))
+	votes, voted, err := SubmitVote("p", id, user.(map[string]interface{})["nickname"].(string))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return

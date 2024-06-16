@@ -28,7 +28,7 @@ func CommentForm(c *gin.Context) {
 		}
 		c.HTML(200, "form-create-comment.html", gin.H{ 
 			"session_user": user,
-			"targetID": targetID,
+			"TargetID": targetID,
 		})
 }
 

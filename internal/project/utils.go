@@ -1,7 +1,6 @@
 package project
 
 import (
-	"fmt"
 	cm "go-api/internal/comment"
 	utils "go-api/pkg/utils"
 	"strconv"
@@ -45,6 +44,7 @@ func ObjectIdToString(id primitive.ObjectID) string {
 func ProjectToProjectView(project Project) ProjectView {
 	return ProjectView{
 		ID: ObjectIdToString(project.ID),
+		TargetID: ObjectIdToString(project.ID),
 		Title: project.Title,
 		Content: project.Content,
 		AuthorID: project.AuthorID,
@@ -70,7 +70,6 @@ func ProjectsToProjectView(projects []Project) []ProjectView {
 }
 
 func AddProjectsPipelineSorter(pipeline []bson.M, sortBy string) []bson.M {
-	fmt.Println("Sort by", sortBy)
 	if sortBy == "new"{
 		pipeline = append(pipeline, bson.M{"$sort": bson.M{"created_at": -1}})
 	} else if sortBy == "old"{
@@ -106,7 +105,6 @@ func ProjectsDefaultQueryParams(c *gin.Context) (int, int, string) {
 	if l > 100 {
 		l = 100
 	}
-	fmt.Println("Page", p, "Limit", l, "Sort by", sortBy)
 	return p, l, sortBy
 }
 
@@ -116,7 +114,7 @@ func GetProjectPipeline(projectID primitive.ObjectID) []bson.M {
 		{"$lookup": bson.M{
 			"from":         "votes",
 			"localField":   "_id",
-			"foreignField": "project_id",
+			"foreignField": "target_id",
 			"as":           "votes",
 		}},
 		{"$lookup": bson.M{
@@ -158,7 +156,7 @@ func GetProjectsPipeline(page int, limit int, sortBy string) []bson.M {
 		{"$lookup": bson.M{
 			"from":         "votes",
 			"localField":   "_id",
-			"foreignField": "project_id",
+			"foreignField": "target_id",
 			"as":           "votes",
 		}},
 		{"$lookup": bson.M{
@@ -183,7 +181,6 @@ func GetProjectsPipeline(page int, limit int, sortBy string) []bson.M {
 			"awards_total": bson.M{"$size": "$awards"},
 		}},
 		{"$addFields": bson.M{
-			// total awards and first 5 awards
 			"awards": bson.M{"$slice": []interface{}{"$awards", 3}},
 		}},
 	}
@@ -193,12 +190,12 @@ func GetProjectsPipeline(page int, limit int, sortBy string) []bson.M {
 func AddProjectsVotedPipeline(pipeline []bson.M, authorID string) []bson.M {
 	pipeline = append(pipeline, bson.M{"$lookup": bson.M{
 		"from":         "votes",
-		"let":          bson.M{"project_id": "$_id"},
+		"let":          bson.M{"target_id": "$_id"},
 		"pipeline":     []bson.M{
 			{"$match": bson.M{
 				"$expr": bson.M{
 					"$and": []bson.M{
-						{"$eq": []string{"$project_id", "$$project_id"}},
+						{"$eq": []string{"$target_id", "$$target_id"}},
 						{"$eq": []string{"$author_id", authorID}},
 					},
 				},

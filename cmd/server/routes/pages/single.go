@@ -13,12 +13,12 @@ import (
 )
 
 func InitializeSingleProjectPage(router *gin.Engine) {
-	router.GET("/:projectID", func (c *gin.Context) {
+	router.GET("/:targetID", func (c *gin.Context) {
 		session := sessions.Default(c)
 		user := session.Get("profile")
 		
-		projectID := c.Param("projectID")
-		id, err := primitive.ObjectIDFromHex(projectID)
+		targetID := c.Param("targetID")
+		id, err := primitive.ObjectIDFromHex(targetID)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid  ID"})
 			return
@@ -41,7 +41,8 @@ func InitializeSingleProjectPage(router *gin.Engine) {
 		projectView := pr.ProjectToProjectView(project)
 		c.HTML(200, "single-project-page.html", gin.H{
 			"title": "syntax error", 
-			"ID": projectID,
+			"ID": targetID,
+			"TargetID": targetID,
 			"session_user": user,
 			"Title": projectView.Title,
 			"Content": projectView.Content,

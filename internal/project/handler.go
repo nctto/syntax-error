@@ -77,6 +77,7 @@ func GetProjectByID(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"message": "Project not found"})
 		return
 	}
+
 	c.JSON(http.StatusOK, project)
 }
 

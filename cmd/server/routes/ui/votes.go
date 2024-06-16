@@ -21,21 +21,40 @@ func UiSubmitVote(c *gin.Context) {
 		return
 	}
 
-	projectId := c.Param("targetID")
-	id, err := primitive.ObjectIDFromHex(projectId)
+	targetID := c.Param("targetID")
+	id, err := primitive.ObjectIDFromHex(targetID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid vote ID"})
 		return
 	}
+	
+	target := c.Query("t")
+	if target == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid target"})
+		return
+	}
+
+	if target != "p" && target != "c" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid target"})
+		return
+	}
 
 	nickname := user.(map[string]interface{})["nickname"].(string)
-	votes, voted, err := vt.SubmitVote("project", id, nickname)
+	votes, voted, err := vt.SubmitVote(target, id, nickname)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	c.HTML(201, "component-vote.html", gin.H{
-		"ID":         projectId,
+
+	var template string
+	if target == "p" {
+		template = "component-vote-project.html"
+	} else {
+		template = "component-vote-comment.html"
+	}
+
+	c.HTML(201, template, gin.H{
+		"ID":         targetID,
 		"VotesTotal": votes,
 		"Voted":      voted,
 	})

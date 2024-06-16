@@ -8,13 +8,14 @@
     <div id="comment-content-{{ .ID }}" class="text-slate-300 text-sm">
         <p>{{ .Content }}</p>
     </div>
+    <div class="text-slate-700 text-xs">{{ .TargetID }}</div>
     <div id="comment-tools-{{.ID}}" class="flex flex-row gap-1">
-        {{template "component-like.html" .}}
+        {{template "component-vote-comment.html" .}}
         {{template "component-reply.html" .}}
     </div>
-    <div id="comment-reply-form-{{.ID}}"></div>
+    <div id="comment-form-{{.ID}}"></div>
     {{ if .Replies }}
-        <div class="flex flex-col gap-2">
+        <div class="flex flex-col gap-2 pl-3 border-l-2 border-solid border-slate-900">
             {{ range .Replies }}
                 {{ template "single-comment.html" . }}
             {{ end }}

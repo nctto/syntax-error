@@ -1,7 +1,6 @@
 package award
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -31,7 +30,6 @@ func DateToString(date primitive.DateTime) string {
 }
 
 func AddAwardsPipelineSorter(pipeline []bson.M, sortBy string) []bson.M {
-	fmt.Println("Sort by", sortBy)
 	if sortBy == "new"{
 		pipeline = append(pipeline, bson.M{"$sort": bson.M{"created_at": -1}})
 	} else if sortBy == "old"{
@@ -66,7 +64,6 @@ func AwardsDefaultQueryParams(c *gin.Context) (int, int, string) {
 	if l > 100 {
 		l = 100
 	}
-	fmt.Println("Page", p, "Limit", l, "Sort by", sortBy)
 	return p, l, sortBy
 }
 

@@ -38,6 +38,7 @@ type ProjectView struct {
 	Awards []aw.Award `json:"awards" bson:"awards,omitempty"`
 	AwardsTotal int `json:"awards_total" bson:"awards_total,omitempty"`
 	CreatedAt string `json:"created_at" bson:"created_at"`
+	TargetID string `json:"target_id" bson:"target_id"`
 }
 
 type ProjectIncoming struct {

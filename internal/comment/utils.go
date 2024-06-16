@@ -1,7 +1,6 @@
 package comment
 
 import (
-	"fmt"
 	"strconv"
 
 	utils "go-api/pkg/utils"
@@ -30,7 +29,6 @@ func ObjectIdToString(id primitive.ObjectID) string {
 }
 
 func AddCommentsPipelineSorter(pipeline []bson.M, sortBy string) []bson.M {
-	fmt.Println("Sort by", sortBy)
 	if sortBy == "new"{
 		pipeline = append(pipeline, bson.M{"$sort": bson.M{"created_at": -1}})
 	} else if sortBy == "old"{
@@ -65,7 +63,6 @@ func CommentsDefaultQueryParams(c *gin.Context) (int, int, string) {
 	if l > 100 {
 		l = 100
 	}
-	fmt.Println("Page", p, "Limit", l, "Sort by", sortBy)
 	return p, l, sortBy
 }
 
@@ -75,36 +72,45 @@ func GetCommentsPipeline(page int, limit int, sortBy string, user interface{}, p
 		{"$match": bson.M{"target_id": projectID}},
 		{"$skip": skip},
 		{"$limit": limit},
+		{"$lookup": bson.M{
+			"from":         "votes",
+			"localField":   "_id",
+			"foreignField": "target_id",
+			"as":           "votes",
+		}},
+		{"$addFields": bson.M{
+			"votes_total": bson.M{"$size": "$votes"},
+		}},
+		
 	}
 	return pipeline
 }
 
 
-func CommentToCommentView(project Comment) CommentView {
+func CommentToCommentView(comment Comment) CommentView {
 	return CommentView{
-		ID: ObjectIdToString(project.ID),
-		Content: project.Content,
-		AuthorID: project.AuthorID,
-		CreatedAt: utils.DateToString(project.CreatedAt),
-
+		ID: ObjectIdToString(comment.ID),
+		TargetID: ObjectIdToString(comment.TargetID),
+		Content: comment.Content,
+		AuthorID: comment.AuthorID,
+		CreatedAt: utils.DateToString(comment.CreatedAt),
+		VotesTotal: comment.VotesTotal,
+		Voted: comment.Voted,
+		Replies: CommentsToCommentView(comment.Replies),
 	}
 }
 
-
-
-func CommentsToCommentView(projects []Comment) []CommentView {
-	var projectView []CommentView
-	for _, project := range projects {
-		projectView = append(projectView, CommentToCommentView(project))
+func CommentsToCommentView(comments []Comment) []CommentView {
+	var commentView []CommentView
+	for _, comment := range comments {
+		commentView = append(commentView, CommentToCommentView(comment))
 	}
-	return projectView
+	return commentView
 }
-
-
 
 func AddCommentsVotedPipeline(pipeline []bson.M, authorID string) []bson.M {
 	pipeline = append(pipeline, bson.M{"$lookup": bson.M{
-		"from":         "likes",
+		"from":         "votes",
 		"let":          bson.M{"target_id": "$_id"},
 		"pipeline":     []bson.M{
 			{"$match": bson.M{

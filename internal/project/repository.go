@@ -2,6 +2,7 @@ package project
 
 import (
 	"context"
+	cmt "go-api/internal/comment"
 	"go-api/pkg/db"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -60,6 +61,12 @@ func DbGetProjectID(id primitive.ObjectID, user interface{}) (Project, error) {
 		cursor.Decode(&project)
 	}
 
+	comments, err := cmt.DbGetAllComments(1, 10, "best", user, id)
+	if err != nil {
+		return project, err
+	}
+	
+	project.Comments = comments
 	return project, nil
 }
 
