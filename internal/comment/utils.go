@@ -90,10 +90,47 @@ func CommentToCommentView(project Comment) CommentView {
 	}
 }
 
+
+
 func CommentsToCommentView(projects []Comment) []CommentView {
 	var projectView []CommentView
 	for _, project := range projects {
 		projectView = append(projectView, CommentToCommentView(project))
 	}
 	return projectView
+}
+
+
+
+func AddCommentsVotedPipeline(pipeline []bson.M, authorID string) []bson.M {
+	pipeline = append(pipeline, bson.M{"$lookup": bson.M{
+		"from":         "likes",
+		"let":          bson.M{"target_id": "$_id"},
+		"pipeline":     []bson.M{
+			{"$match": bson.M{
+				"$expr": bson.M{
+					"$and": []bson.M{
+						{"$eq": []string{"$target_id", "$$target_id"}},
+						{"$eq": []string{"$author_id", authorID}},
+					},
+				},
+			}},
+		},
+		"as": "voted",
+	}})
+	pipeline = append(pipeline, bson.M{
+		"$addFields": bson.M{
+			"voted": bson.M{"$cond": bson.M{
+				"if":  bson.M{
+					"$gt": []interface{}{
+						bson.M{"$size": "$voted"},
+						0,
+					},
+				},
+				"then": true,
+				"else": false,
+			}},
+		},
+	})
+	return pipeline
 }

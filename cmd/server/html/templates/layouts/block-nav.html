@@ -1,28 +1,24 @@
 <nav class="w-full flex justify-between fixed top-0 left-0 right-0 z-10 bg-red-500 p-3 pt-4 pl-20 pr-20">
     <div>
-    <!-- <h6 class="text-white font-bold" style="line-height: 15px;">{{ .title }}</h1> -->
-   <div class="flex  gap-1 align-middle items-center justify-center">
-     <h1 class="text-white font-bold text-3xl" style="line-height: 15px;">nctto</h1>
-   </div>
+        <!-- <h6 class="text-white font-bold" style="line-height: 15px;">{{ .title }}</h1> -->
+        <div class="flex  gap-1 align-middle items-center justify-center">
+            <a href="/" class="text-white font-bold text-3xl" style="line-height: 15px;">nctto</a>
+        </div>
     </div>
     <div class="flex flex-row gap-2 justify-center items-center align-middle">
-    {{ if .session_user }}
-    <div class="flex flex-row gap-2 align-middle items-center cursor-pointer">
-        <svg xmlns="http://www.w3.org/2000/svg" class="text-yellow-500 w-5" viewBox="0 0 16 16" fill="currentColor" class="size-4">
-        <path d="M8 7c3.314 0 6-1.343 6-3s-2.686-3-6-3-6 1.343-6 3 2.686 3 6 3Z" />
-        <path d="M8 8.5c1.84 0 3.579-.37 4.914-1.037A6.33 6.33 0 0 0 14 6.78V8c0 1.657-2.686 3-6 3S2 9.657 2 8V6.78c.346.273.72.5 1.087.683C4.42 8.131 6.16 8.5 8 8.5Z" />
-        <path d="M8 12.5c1.84 0 3.579-.37 4.914-1.037.366-.183.74-.41 1.086-.684V12c0 1.657-2.686 3-6 3s-6-1.343-6-3v-1.22c.346.273.72.5 1.087.683C4.42 12.131 6.16 12.5 8 12.5Z" />
-        </svg>
-        <p class="text-white text-xs">100 coins</p>
-    </div>
-    <div class="flex flex-row gap-2 align-middle items-center cursor-pointer">
-        <img src="{{ .session_user.picture }}" alt="{{ .session_user.nickname }}" class="w-5 h-15 rounded-full">
-        <a id="logout" href="/auth/logout" class="text-white text-sm">logout</a>
-    </div>
-    {{ else }}
-    <div class="flex flex-row gap-2 align-middle items-center cursor-pointer">
-        <a href="/auth/login" class="text-white text-sm">login</a>
-    </div>
-    {{ end }}
+        {{ if .session_user }}
+        {{ template "balance.html" . }}
+        <div class="flex flex-row gap-2 align-middle items-center cursor-pointer">
+            <a href="/profile" class="text-white text-sm">{{ .session_user.nickname }}</a>
+        </div>
+        <div class="flex flex-row gap-2 align-middle items-center cursor-pointer">
+            <img src="{{ .session_user.picture }}" alt="{{ .session_user.nickname }}" class="w-5 h-15 rounded-full">
+            <button id="logout" class="text-white text-sm">logout</button>
+        </div>
+        {{ else }}
+        <div class="flex flex-row gap-2 align-middle items-center cursor-pointer">
+            <a href="/auth/login" class="text-white text-sm">login</a>
+        </div>
+        {{ end }}
     </div>
 </nav>

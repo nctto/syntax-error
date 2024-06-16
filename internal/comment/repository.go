@@ -14,6 +14,15 @@ func DbGetAllComments(page int, limit int, sortBy string, user interface{} , pro
 
 	var comments []Comment
 	pipeline := GetCommentsPipeline(page, limit, sortBy, user, projectID)
+
+	if user != nil {
+		nickname := user.(map[string]interface{})["nickname"].(string)
+
+		if nickname != "" {
+			pipeline = AddCommentsVotedPipeline(pipeline, nickname)
+		}
+	}
+
 	pipeline = AddCommentsPipelineSorter(pipeline, sortBy)
 
 	cursor, err := commentCollection.Aggregate(context.Background(), pipeline)

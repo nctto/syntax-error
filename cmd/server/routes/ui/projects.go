@@ -47,7 +47,7 @@ func UiSubmitProjectForm(c *gin.Context) {
 	if err := c.BindJSON(&newProject); err != nil {
 		errors = append(errors, gin.H{"message": err.Error()})
 	}
-
+	newProject.AuthorID = user.(map[string]interface{})["nickname"].(string)
 	if !pr.RequiredFields(newProject) {
 		errors = append(errors, gin.H{"message": "Missing required fields"})
 	}

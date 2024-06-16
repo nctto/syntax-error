@@ -5,6 +5,7 @@ package auth
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"fmt"
 	"net/http"
 	"net/url"
 	"os"
@@ -56,7 +57,7 @@ func Callback(auth *authenticator.Authenticator) gin.HandlerFunc {
 			Username: profile["nickname"].(string),
 		}
 
-		_, err = user.DbGetUser(userProfile)
+		_, err = user.DbGetUser(profile["nickname"].(string))
 		if err != nil {
 			// Create user if not exists
 			_, err = user.DbCreateUser(userProfile)
@@ -66,13 +67,10 @@ func Callback(auth *authenticator.Authenticator) gin.HandlerFunc {
 			}
 		}
 
-
-
 		// Redirect to logged in page.
 		ctx.Redirect(http.StatusTemporaryRedirect, "/")
 	}
 }
-
 
 // Handler for our login.
 func Login(auth *authenticator.Authenticator) gin.HandlerFunc {
@@ -107,8 +105,6 @@ func generateRandomState() (string, error) {
 	return state, nil
 }
 
-
-
 // Handler for our logout.
 func Logout(ctx *gin.Context) {
 	logoutUrl, err := url.Parse("https://" + os.Getenv("AUTH0_DOMAIN") + "/v2/logout")
@@ -128,6 +124,7 @@ func Logout(ctx *gin.Context) {
 		return
 	}
 
+	fmt.Println("THIS LOGOUT", returnTo.String())
 	parameters := url.Values{}
 	parameters.Add("returnTo", returnTo.String())
 	parameters.Add("client_id", os.Getenv("AUTH0_CLIENT_ID"))

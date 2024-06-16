@@ -12,10 +12,14 @@
             <p class="">website by me</p>
         </div>
     </div>
-
     <script>
-        document.getElementById('logout').addEventListener('click', function(){
-            Cookies.remove('auth-session');
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('logout').addEventListener('click', function () {
+                console.log('logout');
+                Cookies.remove('auth-session');
+                window.location.href = '/auth/logout';
+            })  
+
         });
     </script>
 </section>

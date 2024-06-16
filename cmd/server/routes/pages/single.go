@@ -16,10 +16,7 @@ func InitializeSingleProjectPage(router *gin.Engine) {
 	router.GET("/:projectID", func (c *gin.Context) {
 		session := sessions.Default(c)
 		user := session.Get("profile")
-		if user == nil {
-			c.Redirect(http.StatusFound, "/auth/login")
-		}
-
+		
 		projectID := c.Param("projectID")
 		id, err := primitive.ObjectIDFromHex(projectID)
 		if err != nil {

@@ -1,6 +1,7 @@
 package vote
 
 import (
+	"fmt"
 	"go-api/internal/project"
 	"net/http"
 	"time"
@@ -38,6 +39,41 @@ func GetVoteByID(c *gin.Context) {
 	c.JSON(http.StatusOK, vote)
 }
 
+func SubmitVote(target string, targetID primitive.ObjectID, authorID string) (int32, bool, error) {
+
+	if target == "project" {
+		exists, err := project.DbProjectExists(targetID)
+		if err != nil {
+			return 0, false, err
+		}
+		if !exists {
+			return 0, false, fmt.Errorf("project not found")
+		}	
+	}
+	var voted bool
+	var v Vote
+	v.TargetID = targetID
+	v.AuthorID = authorID
+	v.CreatedAt = primitive.NewDateTimeFromTime(time.Now())
+	vote, err := DbVoteExists(v.TargetID, v.AuthorID)
+	if err != nil {
+		return 0, false, err
+	}
+	
+	if vote {
+		err = DbDeleteVoteByAuthor(v.TargetID, v.AuthorID)
+		if err != nil {
+			return 0, true, err
+		}
+		voted = false
+	} else { voted = true}
+	votes, err := DbGetTargetVotes(v.TargetID)
+	if err != nil {
+		return 0, voted, err
+	}
+	return votes, voted, nil
+}
+
 func CreateVote(c *gin.Context) {
 	
 	session := sessions.Default(c)
@@ -47,57 +83,19 @@ func CreateVote(c *gin.Context) {
 		return
 	}
 	
-	projectId := c.Param("projectID")
+	projectId := c.Param("targetID")
 	id, err := primitive.ObjectIDFromHex(projectId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid vote ID"})
 		return
 	}
 	
-	project,err := project.DbGetProjectID(id, user)
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": "Project not found"})
-		return
-	}
-	
-	var newVote Vote
-	newVote.ProjectID = project.ID
-	newVote.AuthorID = user.(map[string]interface{})["nickname"].(string)
-	newVote.CreatedAt = primitive.NewDateTimeFromTime(time.Now())
-	vote,err := DbVoteExists(newVote.ProjectID, newVote.AuthorID)
+	votes, voted, err := SubmitVote("project", id, user.(map[string]interface{})["nickname"].(string))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	
-	if vote {
-		err = DbDeleteVoteByAuthor(newVote.ProjectID, newVote.AuthorID)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
-			return
-		}
-
-		numberOfVotes, err := DbGetProjectVotes(newVote.ProjectID)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{"ID": projectId ,"Votes": numberOfVotes, "Voted": false})
-		return
-	}
-
-	if _,err := DbCreateVote(newVote); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
-		return
-	}
-
-	numberOfVotes, err := DbGetProjectVotes(newVote.ProjectID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
-		return
-	}
-	
-	c.JSON(http.StatusCreated, gin.H{"ID": projectId ,"Votes": numberOfVotes, "Voted": true})
+	c.JSON(http.StatusCreated, gin.H{"ID": projectId ,"Votes": votes, "Voted": voted})
 }
 
 func UpdateVote(c *gin.Context) {

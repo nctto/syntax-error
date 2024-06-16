@@ -17,7 +17,10 @@ func DbGetAllProjects(page int, limit int, sortBy string, user interface{} ) ([]
 	
 	if user != nil {
 		nickname := user.(map[string]interface{})["nickname"].(string)
-		pipeline = AddProjectsVotedPipeline(pipeline, nickname)
+
+		if nickname != "" {
+			pipeline = AddProjectsVotedPipeline(pipeline, nickname)
+		}
 	}
 
 	pipeline = AddProjectsPipelineSorter(pipeline, sortBy)

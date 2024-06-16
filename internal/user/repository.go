@@ -44,9 +44,9 @@ func DbGetAllUsers(page string, limit string) ([]User, error) {
 	return users, nil
 }
 
-func DbGetUser(user User) (User, error) {
+func DbGetUser(nickname string) (User, error) {
 	var u User
-	err := userCollection.FindOne(context.Background(), bson.M{"username": user.Username}).Decode(&u)
+	err := userCollection.FindOne(context.Background(), bson.M{"username": nickname}).Decode(&u)
 	return u, err
 }
 

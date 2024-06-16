@@ -22,6 +22,9 @@ func RequiredFields(project Project) bool {
 	if project.Link == "" {
 		return false
 	}
+	if project.AuthorID == "" {
+		return false
+	}
 	return true
 }
 
