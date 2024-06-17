@@ -5,14 +5,19 @@
     </div>
     {{ end }}
     <div class="bg-slate-950 flex flex-col rounded-xl p-5 w-full gap-2">
-        {{ if .Comments }}
-            {{ range .Comments }}
-                {{ template "single-comment.html" . }}
+        {{ if .Comments }}    
+            {{ if .session_user }}
+                {{ range .Comments }}
+                    {{ template "single-comment-auth.html" . }}
+                {{ end }}
+            {{ else }}
+                {{ range .Comments }}
+                    {{ template "single-comment.html" . }}
+                {{ end }}
             {{ end }}
         {{ else }}
-            <div class="text-slate-400 text-sm">No comments yet.</div>
+            <div class="text-slate text-sm">No comments yet.</div>
         {{ end }}
         </div>
     </div>
-    <div class="text-slate-600 p-2">load more</div>
 </div>
