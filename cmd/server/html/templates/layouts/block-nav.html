@@ -1,24 +1,17 @@
-<nav class="w-full flex justify-between fixed top-0 left-0 right-0 z-10 p-3 pt-4 pl-20 pr-20">
-    <div>
-        <!-- <h6 class="text-white font-bold" style="line-height: 15px;">{{ .title }}</h1> -->
-        <div class="flex  gap-1 align-middle items-center justify-center">
-            <a href="/" class="text-white font-bold text-3xl" style="line-height: 15px;">nctto</a>
-        </div>
+<nav id="nav" class="grid-cols-3 flex justify-between fixed top-0 left-0 right-0 z-10 p-3 pt-4 pl-20 pr-20">
+    <div id="nav-left" class="flex justify-center items-center align-middle"></div>
+    <div class="flex  gap-1 align-middle items-center justify-center">
+        <a href="/" class="text-white font-bold text-3xl" style="line-height: 15px;">ditto</a>
     </div>
-    <div class="flex flex-row gap-2 justify-center items-center align-middle">
-        {{ if .session_user }}
-        {{ template "balance.html" . }}
-        <div class="flex flex-row gap-2 align-middle items-center cursor-pointer">
-            <a href="/profile" class="text-white text-sm">{{ .session_user.nickname }}</a>
-        </div>
-        <div class="flex flex-row gap-2 align-middle items-center cursor-pointer">
-            <img src="{{ .session_user.picture }}" alt="{{ .session_user.nickname }}" class="w-5 h-15 rounded-full">
-            <button id="logout" class="text-white text-sm">logout</button>
-        </div>
-        {{ else }}
-        <div class="flex flex-row gap-2 align-middle items-center cursor-pointer">
-            <a href="/auth/login" class="text-white text-sm">login</a>
-        </div>
-        {{ end }}
+    <div id="nav-right" class="flex flex-row gap-2 justify-center items-center align-middle">
     </div>
 </nav>
+{{ if .session_user }}
+<div class="fixed top-3 right-5 flex flex-row gap-1 z-10">
+        {{ template "balance.html" . }}
+        <div class="flex flex-row gap-2 align-middle items-center cursor-pointer">
+            <!-- <img src="{{ .session_user.picture }}" alt="{{ .session_user.nickname }}" class="w-5 h-15 rounded-full"> -->
+            <button id="logout" class="text-white text-sm">logout</button>
+        </div>
+    </div>
+{{ end }}

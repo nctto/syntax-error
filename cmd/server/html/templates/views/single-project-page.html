@@ -9,13 +9,17 @@
     <main class="p-10 mt-20 flex flex-col justify-center items-center align-middle">
       <section>
         <div class="flex flex-col gap-4">
-          <a href="/" class="text-white text-xs flex flex-row items-center align-middle gap-1">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
-            </svg>
-            go back
-          </a>
-          {{ template "single-project.html" .}}
+          <div id="toolbar" class="flex flex-row">
+            <a href="/" class="text-white text-xs font-bold flex flex-row items-center align-middle gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+              </svg>
+              go back
+            </a>
+          </div>
+          <div id="projects">
+            {{ template "single-project.html" .}}
+          </div>
         </div>
       {{template "list-comments.html" . }}
       </section>

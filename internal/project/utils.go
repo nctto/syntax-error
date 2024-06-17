@@ -151,6 +151,7 @@ func GetProjectPipelineByID(projectID primitive.ObjectID) []bson.M {
 	pipeline := []bson.M{
 		{"$match": bson.M{"_id": projectID}},
 	}
+	pipeline = GetPipeline(pipeline)
 	return pipeline
 }
 func GetProjectsByUserPipeline(username string) []bson.M {
@@ -163,6 +164,36 @@ func GetProjectsByUserPipeline(username string) []bson.M {
 
 func GetProjectsPaginatedPipeline(page int, limit int, sortBy string) []bson.M {
 	skip := int64(page*limit - limit)
+	
+	// lookup most voted projects
+	if sortBy == "best" {
+		pipeline := []bson.M{
+			{
+				"$lookup": bson.M{
+					"from":         "votes",
+					"localField":   "_id",
+					"foreignField": "target_id",
+					"as":           "votes",
+				},
+			},
+			{
+				"$addFields": bson.M{
+					"votes_total": bson.M{"$size": "$votes"},
+				},
+			},
+			{
+				"$sort": bson.M{"votes_total": -1},
+			},
+			{
+				"$skip": skip,
+			},
+			{
+				"$limit": limit,
+			},
+		};
+		pipeline = GetPipeline(pipeline)
+		return pipeline
+	}
 	pipeline := []bson.M{
 		{"$skip": skip},
 		{"$limit": limit},

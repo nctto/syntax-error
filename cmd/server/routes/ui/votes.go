@@ -30,17 +30,17 @@ func UiSubmitVote(c *gin.Context) {
 	
 	target := c.Query("t")
 	if target == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid target"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "target type is required"})
 		return
 	}
 
 	if target != "p" && target != "c" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid target"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid target type"})
 		return
 	}
 
 	nickname := user.(map[string]interface{})["nickname"].(string)
-	votes, voted, err := vt.SubmitVote(target, id, nickname)
+	votes, voted, err := vt.DbSubmitVote(target, id, nickname)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return

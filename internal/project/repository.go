@@ -4,6 +4,7 @@ import (
 	"context"
 	cmt "go-api/internal/comment"
 	"go-api/pkg/db"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -23,8 +24,8 @@ func DbGetAllProjects(page int, limit int, sortBy string, user interface{} ) ([]
 			pipeline = AddProjectsVotedPipeline(pipeline, nickname)
 		}
 	}
-
 	pipeline = AddProjectsPipelineSorter(pipeline, sortBy)
+
 	cursor, err := projectCollection.Aggregate(context.Background(), pipeline)
 	if err != nil {
 		return projects, err
@@ -98,6 +99,7 @@ func DbProjectExists(id primitive.ObjectID) (bool, error) {
 }
 
 func DbCreateProject(project Project) (primitive.ObjectID, error) {
+	project.CreatedAt = primitive.NewDateTimeFromTime(time.Now())
 	result, err := projectCollection.InsertOne(context.Background(), project)
 	if err != nil {
 		return primitive.NilObjectID, err

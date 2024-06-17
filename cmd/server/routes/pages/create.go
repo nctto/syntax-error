@@ -24,13 +24,13 @@ func InitializeCreatePage(router *gin.Engine) {
 		balance, err := wlt.DbGetUserWalletBalanceByNickName(nickname)
 		if err != nil {
 			c.HTML(200, "create-project-page.html", gin.H{
-				"title": "syntax error", 
+				"title": "Submit Projec", 
 				"session_user": user,
 				"balance": "XXXX",
 			})
 		}
 		c.HTML(200, "create-project-page.html", gin.H{
-			"title": "syntax error", 
+			"title": "Submit Project", 
 			"session_user": user,
 			"balance": balance,
 		})

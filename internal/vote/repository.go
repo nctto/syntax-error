@@ -3,7 +3,10 @@ package vote
 import (
 	"context"
 	"fmt"
+	"go-api/internal/comment"
+	"go-api/internal/project"
 	"go-api/pkg/db"
+	"time"
 
 	"strconv"
 
@@ -32,15 +35,12 @@ func DbGetAllVotes(page string, limit string) ([]Vote, error) {
 	if err != nil {
 		return votes, err
 	}
-
 	defer cursor.Close(context.Background())
-
 	for cursor.Next(context.Background()) {
 		var vote Vote
 		cursor.Decode(&vote)
 		votes = append(votes, vote)
 	}
-
 	return votes, nil
 }
 
@@ -99,4 +99,60 @@ func DbGetTargetVotes(projectID primitive.ObjectID) (int32, error) {
 		votes = append(votes, vote)
 	}
 	return int32(len(votes)), nil	
+}
+
+
+func DbSubmitVote(target string, targetID primitive.ObjectID, authorID string) (int32, bool, error) {
+
+	if target == "p" {
+		exists, err := project.DbProjectExists(targetID)
+		if err != nil {
+			return 0, false, err
+		}
+		if !exists {
+			return 0, false, fmt.Errorf("project not found")
+		}	
+	}
+
+	if target == "c" {
+		exists, err := comment.DbCommentExists(targetID)
+		if err != nil {
+			return 0, false, err
+		}
+		if !exists {
+			return 0, false, fmt.Errorf("comment not found")
+		}
+	
+	}
+
+	var voted bool
+	var v Vote
+	v.TargetID = targetID
+	v.AuthorID = authorID
+	v.CreatedAt = primitive.NewDateTimeFromTime(time.Now())
+	v.Type = target
+	
+	vote, err := DbVoteExists(v.TargetID, v.AuthorID)
+	if err != nil {
+		return 0, false, err
+	}
+	fmt.Println("Vote exists: ", vote)
+	if vote {
+		err = DbDeleteVoteByAuthor(v.TargetID, v.AuthorID)
+		if err != nil {
+			return 0, true, err
+		}
+		voted = false
+	} else { 
+		_,err := DbCreateVote(v)
+		if err != nil {
+			return 0, false, err
+		}
+		voted = true
+	}
+	votes, err := DbGetTargetVotes(v.TargetID)
+	if err != nil {
+		return 0, voted, err
+	}
+	return votes, voted, nil
 }

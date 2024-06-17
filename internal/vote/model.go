@@ -10,4 +10,5 @@ type Vote struct {
 	TargetID 	primitive.ObjectID `json:"target_id" bson:"target_id"`
 	AuthorID 	string `json:"author_id" bson:"author_id"`
 	CreatedAt  primitive.DateTime `json:"created_at" bson:"created_at"`
+	Type 		string `json:"type" bson:"type"`
 }

@@ -2,6 +2,8 @@ package project
 
 import (
 	"encoding/json"
+	usr "go-api/internal/user"
+	wlt "go-api/internal/wallet"
 	"net/http"
 	"strconv"
 	"strings"
@@ -45,6 +47,7 @@ func FakeProjects(c *gin.Context) {
 	}
 	c.JSON(http.StatusCreated, projects)
 }
+
 
 func GetProjects(c *gin.Context) {
 
@@ -167,4 +170,26 @@ func GetRandomProject(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, project)
+}
+
+func GetHTMLCreateForm(c *gin.Context) {
+	session := sessions.Default(c)
+	user := session.Get("profile")
+	if user == nil {
+		c.Redirect(http.StatusFound, "/auth/login")
+	}
+	nickname := usr.UserNickName(user)
+	balance, err := wlt.DbGetUserWalletBalanceByNickName(nickname)
+	if err != nil {
+		c.HTML(200, "create-project-page.html", gin.H{
+			"title": "Submit Projec", 
+			"session_user": user,
+			"balance": "XXXX",
+		})
+	}
+	c.HTML(200, "create-project-page.html", gin.H{
+		"title": "Submit Project", 
+		"session_user": user,
+		"balance": balance,
+	})
 }
