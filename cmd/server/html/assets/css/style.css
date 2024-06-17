@@ -1,9 +1,9 @@
 .voted-true {
-    background: #FFD700 !important;
+    color: orange !important;
 }
 
 .voted-false {
-    background: #A0AEC0 !important;
+    color: white !important;
 }
 
 .tagify {

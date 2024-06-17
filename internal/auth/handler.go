@@ -57,7 +57,7 @@ func Callback(auth *authenticator.Authenticator) gin.HandlerFunc {
 			Username: profile["nickname"].(string),
 		}
 
-		_, err = user.DbGetUser(profile["nickname"].(string))
+		_, err = user.DbGetUserByUsername(profile["nickname"].(string))
 		if err != nil {
 			// Create user if not exists
 			_, err = user.DbCreateUser(userProfile)

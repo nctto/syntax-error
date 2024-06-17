@@ -2,7 +2,10 @@ package router
 
 import (
 	"encoding/gob"
+	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"time"
 
 	"go-api/cmd/server/authenticator"
@@ -19,13 +22,10 @@ import (
 	"go-api/cmd/server/routes"
 )
 
-const userkey = "user"
-
-var secret = []byte("secret")
 
 func AuthRequired(c *gin.Context) {
 	session := sessions.Default(c)
-	user := session.Get(userkey)
+	user := session.Get("user")
 	if user == nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
@@ -50,15 +50,23 @@ func New(auth *authenticator.Authenticator) *gin.Engine {
 	
 	gob.Register(map[string]interface{}{})
 	
-	authStore := cookie.NewStore([]byte("secret"))
-	
-	
+	authStore := cookie.NewStore([]byte("secret"))	
+
 	router.Use(mw)
 	router.Use(sessions.Sessions("auth-session", authStore))
+	// get the current directory
+	dir, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+	server_dir := filepath.Join(dir,"cmd", "server", "html")
 	
-
-	router.Static("/assets", "/Users/rfcku/sites/rfcku/go-api/cmd/server/assets")
-	router.LoadHTMLGlob("/Users/rfcku/sites/rfcku/go-api/cmd/server/html/templates/**/*")
+	assets_dir := filepath.Join(server_dir, "assets")
+	templates_dir := filepath.Join(server_dir,"templates", "/**/*")
+	
+	// serve the static files
+	router.Static("/assets", assets_dir)
+	router.LoadHTMLGlob(templates_dir)
 	
 	routes.InitializeAuth(router, auth)
 	api.InitializeProjects(router)
@@ -69,5 +77,6 @@ func New(auth *authenticator.Authenticator) *gin.Engine {
 	pages.InitializeCreatePage(router)
 	pages.InitializeHomePage(router)
 	pages.InitializeSingleProjectPage(router)
+	pages.InitializeSingleUserPage(router)
 	return router
 }

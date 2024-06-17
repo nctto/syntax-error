@@ -1,5 +1,4 @@
-<div id="project-{{ .ID }}" class="flex flex-row p-5 rounded-xl gap-4 border-slate-600 border hover:bg-slate-950">
-    {{ template "component-vote-project.html" . }}
+<div id="project-{{ .ID }}" class="p-5 rounded-xl gap-4 border-slate-600 border hover:bg-slate-950 w-full">
     <div class="flex flex-col gap-1 overflow-hidden">
         <div class="flex flex-col gap-0">
             <div class="flex flex-row gap-1 align-middle items-center">
@@ -18,20 +17,23 @@
                     </svg>
                 </a>
             </div>
-            <div class="flex text-xs">
+            <div class="flex flex-row gap-1 text-xs">
                 {{ range .Tags }}
-                    <span class="text-xs text-slate-400 hover:text-slate-200 cursor-pointer">#{{ . }}</span>
+                    <span class="text-xs text-slate-400 hover:text-slate-200 cursor-pointer border border-slate-600 rounded-sm pl-1 pr-1">#{{ . }}</span>
                 {{ end }}
             </div>
         </div>
         <div class="flex flex-col">
             <a href="/{{.ID}}" class="text-sm text-slate-300 cursor-pointer truncate">
-                Description Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos cupiditate hic, incidunt, magnam ratione nulla obcaecati voluptas minima, officiis reprehenderit harum! Distinctio asperiores molestiae sapiente similique consectetur, recusandae adipisci quidem. 
-            </p>
+                {{ .Content }}
+            </a>
         </div>
         <div class="w-full bg-slate-950" style="height:1px"></div>
-        <a href="/{{ .ID }}" class="text-xs text-slate-400 cursor-pointer">
-            {{ .CommentsTotal }} Comments
-        </a>
+        <div class="flex flex-row gap-2">
+            {{ template "component-vote-project.html" . }}
+            <a href="/{{ .ID }}" class="text-xs text-slate-400 cursor-pointer border border-slate-600 rounded-xl p-1 pl-2 pr-2">
+                {{ .CommentsTotal }} Comments
+            </a>
+        </div>
     </div>
 </div>

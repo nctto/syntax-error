@@ -35,7 +35,7 @@ func DbUserWalletHasBalance(userID primitive.ObjectID, amount int) (bool, error)
 
 func DbGetUserWallerByNickName(nickname string) (Wallet, error) {
 	var user usr.User
-	user, err := usr.DbGetUser(nickname)
+	user, err := usr.DbGetUserByUsername(nickname)
 	if err != nil {
 		return Wallet{}, err
 	}
@@ -44,7 +44,7 @@ func DbGetUserWallerByNickName(nickname string) (Wallet, error) {
 
 func DbGetUserWalletBalanceByNickName(nickname string) (int, error) {
 	var user usr.User
-	user, err := usr.DbGetUser(nickname)
+	user, err := usr.DbGetUserByUsername(nickname)
 	if err != nil {
 		return 0, err
 	}

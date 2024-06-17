@@ -44,13 +44,13 @@ func DbGetAllUsers(page string, limit string) ([]User, error) {
 	return users, nil
 }
 
-func DbGetUser(nickname string) (User, error) {
+func DbGetUserByUsername(nickname string) (User, error) {
 	var u User
 	err := userCollection.FindOne(context.Background(), bson.M{"username": nickname}).Decode(&u)
 	return u, err
 }
 
-func DbGetUserID(id primitive.ObjectID) (User, error) {
+func DbGetUserByID(id primitive.ObjectID) (User, error) {
 	var user User
 	err := userCollection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&user)
 	return user, err

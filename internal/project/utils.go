@@ -108,9 +108,8 @@ func ProjectsDefaultQueryParams(c *gin.Context) (int, int, string) {
 	return p, l, sortBy
 }
 
-func GetProjectPipeline(projectID primitive.ObjectID) []bson.M {
-	pipeline := []bson.M{
-		{"$match": bson.M{"_id": projectID}},
+func GetPipeline(pipeline []bson.M) []bson.M {
+	dflt := []bson.M{
 		{"$lookup": bson.M{
 			"from":         "votes",
 			"localField":   "_id",
@@ -143,47 +142,32 @@ func GetProjectPipeline(projectID primitive.ObjectID) []bson.M {
 			"awards": bson.M{"$slice": []interface{}{"$awards", 3}},
 		}},
 	}
-	return pipeline
 
+	pipeline = append(pipeline, dflt...)
+	return pipeline
 }
 
+func GetProjectPipelineByID(projectID primitive.ObjectID) []bson.M {
+	pipeline := []bson.M{
+		{"$match": bson.M{"_id": projectID}},
+	}
+	return pipeline
+}
+func GetProjectsByUserPipeline(username string) []bson.M {
+	pipeline := []bson.M{
+		{"$match": bson.M{"author_id": username}},
+	}
+	pipeline = GetPipeline(pipeline)
+	return pipeline
+}
 
-func GetProjectsPipeline(page int, limit int, sortBy string) []bson.M {
+func GetProjectsPaginatedPipeline(page int, limit int, sortBy string) []bson.M {
 	skip := int64(page*limit - limit)
 	pipeline := []bson.M{
 		{"$skip": skip},
 		{"$limit": limit},
-		{"$lookup": bson.M{
-			"from":         "votes",
-			"localField":   "_id",
-			"foreignField": "target_id",
-			"as":           "votes",
-		}},
-		{"$lookup": bson.M{
-			"from":         "comments",
-			"localField":   "_id",
-			"foreignField": "target_id",
-			"as":           "comments",
-		}},
-		{"$lookup": bson.M{
-			"from":         "awards",
-			"localField":   "_id",
-			"foreignField": "target_id",
-			"as":           "awards",
-		}},
-		{"$addFields": bson.M{
-			"votes_total": bson.M{"$size": "$votes"},
-		}},
-		{"$addFields": bson.M{
-			"comments_total": bson.M{"$size": "$comments"},
-		}},
-		{"$addFields": bson.M{
-			"awards_total": bson.M{"$size": "$awards"},
-		}},
-		{"$addFields": bson.M{
-			"awards": bson.M{"$slice": []interface{}{"$awards", 3}},
-		}},
 	}
+	pipeline = GetPipeline(pipeline)
 	return pipeline
 }
 

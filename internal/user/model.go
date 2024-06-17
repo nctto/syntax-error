@@ -11,3 +11,9 @@ type User struct {
 	Username	string             `json:"username" bson:"username"`
 	CreatedAt  primitive.DateTime `json:"created_at" bson:"created_at"`
 }
+
+type UserView struct {
+	ID      	string `json:"id" bson:"_id,omitempty"`
+	Username	string             `json:"username" bson:"username"`
+	CreatedAt  primitive.DateTime `json:"created_at" bson:"created_at"`
+}

@@ -14,7 +14,7 @@ var projectCollection = db.GetCollection("projects")
 func DbGetAllProjects(page int, limit int, sortBy string, user interface{} ) ([]Project, error) {
 
 	var projects []Project
-	pipeline := GetProjectsPipeline(page, limit, sortBy)
+	pipeline := GetProjectsPaginatedPipeline(page, limit, sortBy)
 	
 	if user != nil {
 		nickname := user.(map[string]interface{})["nickname"].(string)
@@ -41,9 +41,28 @@ func DbGetAllProjects(page int, limit int, sortBy string, user interface{} ) ([]
 	return projects, nil
 }
 
+func DbGetProjectsByUser(username string) ([]Project, error) {
+	var projects []Project
+	pipeline := GetProjectsByUserPipeline(username)
+	cursor, err := projectCollection.Aggregate(context.Background(), pipeline)
+	if err != nil {
+		return projects, err
+	}
+
+	defer cursor.Close(context.Background())
+
+	for cursor.Next(context.Background()) {
+		var project Project
+		cursor.Decode(&project)
+		projects = append(projects, project)
+	}
+
+	return projects, nil
+}
+
 func DbGetProjectID(id primitive.ObjectID, user interface{}) (Project, error) {
 	
-	pipeline := GetProjectPipeline(id)
+	pipeline := GetProjectPipelineByID(id)
 	if user != nil {
 		nickname := user.(map[string]interface{})["nickname"].(string)
 		pipeline = AddProjectsVotedPipeline(pipeline, nickname)
