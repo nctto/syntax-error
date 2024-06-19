@@ -108,6 +108,35 @@ func CommentsToCommentView(comments []Comment) []CommentView {
 	return commentView
 }
 
+func CommentsPaginatedView(projectID primitive.ObjectID, comments []Comment, totalRecords int64, page int, limit int, sortBy string) CommentPaginated {
+	ProjectPaginated := CommentPaginated{}
+	ProjectPaginated.Data = CommentsToCommentView(comments)
+
+	pagination := Pagination{}
+	pagination.Page = page
+	pagination.Limit = limit
+	pagination.SortBy = sortBy
+	pagination.TotalPages = totalRecords / int64(limit)
+	pagination.TotalRecords = totalRecords
+	pagination.CurrentPage = int64(page)
+	if page < int(pagination.TotalPages) {
+		pagination.HasNext = true
+	} else {
+		pagination.HasNext = false
+	}
+
+	if page > 0 {
+		pagination.HasPrev = true
+	} else {
+		pagination.HasPrev = false
+	}
+	pagination.NextLink = "/api/comments/"+ ObjectIdToString(projectID) +"?page=" + strconv.Itoa(page+1) + "&limit=" + strconv.Itoa(limit)
+	pagination.PrevLink = "/api/comments/"+ ObjectIdToString(projectID) +"?page=" + strconv.Itoa(page-1) + "&limit=" + strconv.Itoa(limit)
+	ProjectPaginated.Pagination = pagination
+	return ProjectPaginated
+}
+
+
 func AddCommentsVotedPipeline(pipeline []bson.M, authorID string) []bson.M {
 	pipeline = append(pipeline, bson.M{"$lookup": bson.M{
 		"from":         "votes",

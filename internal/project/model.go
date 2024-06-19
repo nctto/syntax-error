@@ -36,11 +36,29 @@ type ProjectView struct {
 	VotesTotal	 int32 `json:"votes_total" bson:"votes_total,omitempty"`
 	Voted	 bool  `json:"voted" bson:"voted,omitempty"`
 	CommentsTotal int `json:"comments_total" bson:"comments_total,omitempty"`
-	Comments []cm.CommentView `json:"comments" bson:"comments,omitempty"`
+	Comments cm.CommentPaginated `json:"comments" bson:"comments,omitempty"`
 	Awards []aw.Award `json:"awards" bson:"awards,omitempty"`
 	AwardsTotal int `json:"awards_total" bson:"awards_total,omitempty"`
 	CreatedAt string `json:"created_at" bson:"created_at"`
 	TargetID string `json:"target_id" bson:"target_id"`
+}
+
+type Pagination struct {
+	Page int
+	Limit int
+	SortBy string
+	HasPrev bool
+	HasNext bool
+	TotalRecords int64
+	TotalPages int64
+	CurrentPage int64
+	NextLink string
+	PrevLink string
+}
+
+type ProjectPaginated struct {
+	Data         []ProjectView `json:"data"`
+	Pagination   Pagination    `json:"pagination"`
 }
 
 type ProjectIncoming struct {

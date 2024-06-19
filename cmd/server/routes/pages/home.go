@@ -18,22 +18,18 @@ func InitializeHomePage(router *gin.Engine) {
 	user := session.Get("profile")
 
 	page, limit, sortBy := pr.ProjectsDefaultQueryParams(c)
-	projects, err := pr.DbGetAllProjects(page, limit, sortBy, user)
+	projects,total, err := pr.DbGetAllProjects(page, limit, sortBy, user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	projectsView := pr.ProjectsToProjectView(projects)
+	paginatedProjects := pr.ProjectPaginatedView(projects, total, page, limit, sortBy)
 	nickname := usr.UserNickName(user)
 	if nickname == "" {
 		c.HTML(200, "home-page.html", gin.H{
 			"title": "syntax error", 
 			"session_user": user,
-			"projects": projectsView,
-			"page": page,
-			"limit": limit,
-			"nextPage": "2",
-			"sortBy": sortBy,
+			"projects": paginatedProjects,
 			"balance": "XXXX",
 		})
 		return
@@ -51,11 +47,7 @@ func InitializeHomePage(router *gin.Engine) {
 		"title": "syntax error", 
 		"session_user": user,
 		"balance": balance,
-		"projects": projectsView,
-		"page": page,
-		"limit": limit,
-		"nextPage": "2",
-		"sortBy": sortBy,
+		"projects": paginatedProjects,
 	})
 })
 }

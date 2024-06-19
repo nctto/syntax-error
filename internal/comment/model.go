@@ -25,3 +25,21 @@ type CommentView struct {
 	Voted		bool `json:"voted"`
 	VotesTotal int32 `json:"votes_total"`
 }
+
+type Pagination struct {
+	Page int `json:"page"`
+	Limit int `json:"limit"`
+	SortBy string `json:"sort_by"`
+	HasPrev bool `json:"has_prev"`
+	HasNext bool `json:"has_next"`
+	TotalRecords int64 `json:"total_records"`
+	TotalPages int64 `json:"total_pages"`
+	CurrentPage int64 `json:"current_page"`
+	NextLink string `json:"next_link"`
+	PrevLink string `json:"prev_link"`
+}
+
+type CommentPaginated struct {
+	Data []CommentView `json:"comments"`
+	Pagination Pagination `json:"pagination"`
+}

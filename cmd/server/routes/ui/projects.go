@@ -16,20 +16,16 @@ func UiGetAllProjects(c *gin.Context) {
 	user := session.Get("profile")
 
 	page, limit, sortBy := pr.ProjectsDefaultQueryParams(c)
-	projects, err := pr.DbGetAllProjects(page, limit, sortBy, user)
+	projects, total,  err := pr.DbGetAllProjects(page, limit, sortBy, user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	projectsView := pr.ProjectsToProjectView(projects)
+	paginatedProjects := pr.ProjectPaginatedView(projects, total, page, limit, sortBy)
 
 	c.HTML(200, "list-projects.html", gin.H{
 		"session_user": user,
-		"projects": projectsView,
-		"page": page,
-		"limit": limit,
-		"nextPage": page + 1,
-		"sortBy": sortBy,
+		"projects": paginatedProjects,
 	})
 }
 

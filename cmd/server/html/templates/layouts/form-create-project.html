@@ -1,24 +1,44 @@
 <div class="flex flex-col gap-4">
-    <h1 class="text-3xl text-white font-bold">Submit</h1>
     <form id="mainForm" hx-post="/ui/projects/form/submit" class="flex flex-col gap-3" hx-trigger="submit" hx-ext="json-enc" hx-target="#response" hx-swap="#mainForm" hx-validate>
     <div class="form-control w-full flex flex-col gap-1">
-        <label for="title" class="text-white"><small>Give it a title</small></label>
+        <label for="title" class="text-white font-bold text-2xl"><small>Give it a title</small></label>
         <input type="text" name="title" placeholder="" hx-trigger="validate()" class="p-2 border border-slate-900 bg-black rounded-lg text-slate-200" required >
     </div>
-    <div class="form-control w-full flex flex-col gap-1">
-        <label for="content" class="text-white"><small>Content</small></label>
-        <textarea type="text" name="content" placeholder="" class="p-2 border border-slate-900 bg-black rounded-lg text-slate-200" required ></textarea>
+    <style>
+        .ql-toolbar.ql-snow{
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 10px 10px 0px 0px !important;
+        }
+        .ql-container.ql-snow {
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 0px 0px 10px 10px !important;
+        }
+    </style>
+    <div class="text-slate-200">
+        <div id="editor">
+        <p>Hello World!</p>
+        <p>Some initial <strong>bold</strong> text</p>
+        <p><br /></p>
+        </div>
     </div>
     <div class="form-control w-full flex flex-col gap-1">
-        <label for="link" class="text-white"><small>Link</small></label>
+        <label for="content" class="text-white font-bold text-2xl"><small>Add some content</small></label>
+        <textarea type="text" hidden name="content" placeholder="" class="p-2 border border-slate-900 bg-black rounded-lg text-slate-200" required ></textarea>
+    </div>
+    <div class="form-control w-full flex flex-col gap-1">
+        <label for="link" class="text-white font-bold text-2xl"><small>Image link</small></label>
         <input type="url" name="link" placeholder="" class="p-2 border border-slate-900 bg-black rounded-lg text-slate-200" required >
     </div>
-        <div class="form-control w-full flex flex-col">
-        <label for="tags" class="text-white"><small>Add some tags</small></label>
+    <div class="form-control w-full flex flex-col">
+        <label for="tags" class="text-white font-bold text-2xl"><small>Add some tags</small></label>
         <input type="text" name="tagify" class="p-2 border border-slate-900 bg-black rounded-lg text-slate-200"  placeholder="" required>
         <input type="text" name="tags" hidden disabled required>
         </div>
         <button id="submit" type="submit" class="p-2 bg-slate-900 text-white cursor-pointer rounded-lg hover:bg-red-500">submit</button>
     </form>
+
+
+
+
     <div id="response" class="flex flex-col gap-2"></div>
 </div>

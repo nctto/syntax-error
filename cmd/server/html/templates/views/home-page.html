@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en-us">
  <head>
-  <title>{{ .title }}</title>
+  <title>ditto</title>
   {{ template "block-header.html" .}}
 </head>
   <body class="w-screen min-h-screen h-full bg-black">
@@ -10,11 +10,6 @@
       <section class="p-10 mt-20 flex justify-center">        
         <div class="flex flex-col gap-4 max-w-xl" hx-swap="innerHTML">
           {{ template "list-projects.html" .}}
-          <div class="flex flex-row justify-center align-middle items-center">
-              <div class="text-slate-400 text-sm">
-                  <button class="text-md" hx-get="/ui/projects/all?page={{ .nextPage }}&sort_by={{.sortBy}}" hx-target="#projects" hx-swap="innerHTML">next page</button>
-              </div>
-          </div>
         </div>
       </section>
     </main>

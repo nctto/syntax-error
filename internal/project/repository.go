@@ -12,7 +12,7 @@ import (
 
 var projectCollection = db.GetCollection("projects")
 
-func DbGetAllProjects(page int, limit int, sortBy string, user interface{} ) ([]Project, error) {
+func DbGetAllProjects(page int, limit int, sortBy string, user interface{} ) ([]Project, int64, error) {
 
 	var projects []Project
 	pipeline := GetProjectsPaginatedPipeline(page, limit, sortBy)
@@ -28,7 +28,7 @@ func DbGetAllProjects(page int, limit int, sortBy string, user interface{} ) ([]
 
 	cursor, err := projectCollection.Aggregate(context.Background(), pipeline)
 	if err != nil {
-		return projects, err
+		return projects, 0, err
 	}
 
 	defer cursor.Close(context.Background())
@@ -39,7 +39,12 @@ func DbGetAllProjects(page int, limit int, sortBy string, user interface{} ) ([]
 		projects = append(projects, project)
 	}
 
-	return projects, nil
+	totalRecords, err := projectCollection.CountDocuments(context.Background(), bson.M{})
+	if err != nil {
+		return projects, 0, err
+	}
+
+	return projects, totalRecords, nil
 }
 
 func DbGetProjectsByUser(username string) ([]Project, error) {

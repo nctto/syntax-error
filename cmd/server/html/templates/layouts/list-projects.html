@@ -42,9 +42,12 @@
             </div>
         </div>
     </div>
-    {{ range .projects }}
+    {{ range .projects.Data }}
         {{ template "single-project.html" .}}
     {{end}}
+    <div class="text-xl text-red-500">
+        {{ .projects.Pagination.TotalRecords }} load more ...
+    </div>
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function() {

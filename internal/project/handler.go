@@ -48,19 +48,21 @@ func FakeProjects(c *gin.Context) {
 	c.JSON(http.StatusCreated, projects)
 }
 
-
 func GetProjects(c *gin.Context) {
 
 	session := sessions.Default(c)
 	user := session.Get("profile")
 	
 	page, limit, sortBy := ProjectsDefaultQueryParams(c)
-	projects, err := DbGetAllProjects(page, limit, sortBy, user)
+	projects, total, err := DbGetAllProjects(page, limit, sortBy, user)
+	
+	paginatedProjects := ProjectPaginatedView(projects, total, page, limit, sortBy)
+	
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, projects)
+	c.JSON(http.StatusOK, paginatedProjects)
 }
 
 func GetProjectByID(c *gin.Context) {

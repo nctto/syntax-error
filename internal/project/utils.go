@@ -55,7 +55,7 @@ func ProjectToProjectView(project Project) ProjectView {
 		CommentsTotal: project.CommentsTotal,
 		Awards: project.Awards,
 		AwardsTotal: project.AwardsTotal,
-		Comments: cm.CommentsToCommentView(project.Comments),
+		Comments: cm.CommentsPaginatedView(project.ID, project.Comments, int64(project.CommentsTotal), 10, 1, "best"),
 		CreatedAt: utils.DateToString(project.CreatedAt),
 
 	}
@@ -67,6 +67,35 @@ func ProjectsToProjectView(projects []Project) []ProjectView {
 		projectView = append(projectView, ProjectToProjectView(project))
 	}
 	return projectView
+}
+
+func ProjectPaginatedView(projects []Project, totalRecords int64, page int, limit int, sortBy string) ProjectPaginated {
+	ProjectPaginated := ProjectPaginated{}
+	ProjectPaginated.Data = ProjectsToProjectView(projects)
+
+	pagination := Pagination{}
+	pagination.Page = page
+	pagination.Limit = limit
+	pagination.SortBy = sortBy
+	pagination.TotalPages = totalRecords / int64(limit)
+	pagination.TotalRecords = totalRecords
+	pagination.CurrentPage = int64(page)
+	if page < int(pagination.TotalPages) {
+		pagination.HasNext = true
+	} else {
+		pagination.HasNext = false
+	}
+
+	if page > 0 {
+		pagination.HasPrev = true
+	} else {
+		pagination.HasPrev = false
+	}
+	pagination.NextLink = "/api/projects?page=" + strconv.Itoa(page+1) + "&limit=" + strconv.Itoa(limit)
+	pagination.PrevLink = "/api/projects?page=" + strconv.Itoa(page-1) + "&limit=" + strconv.Itoa(limit)
+	ProjectPaginated.Pagination = pagination
+
+	return ProjectPaginated
 }
 
 func AddProjectsPipelineSorter(pipeline []bson.M, sortBy string) []bson.M {
@@ -168,6 +197,12 @@ func GetProjectsPaginatedPipeline(page int, limit int, sortBy string) []bson.M {
 	// lookup most voted projects
 	if sortBy == "best" {
 		pipeline := []bson.M{
+			{
+				"$addFields": bson.M{
+					"totalRecords": "$totalRecords.count",
+				},
+			},
+
 			{
 				"$lookup": bson.M{
 					"from":         "votes",

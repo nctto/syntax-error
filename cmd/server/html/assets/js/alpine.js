@@ -74,7 +74,6 @@ function load() {
     if (errors.length > 0) {
       alert('Please fix the errors before submitting the projects');
     } else {
-      // clear the form
       document.querySelector('form').reset();
       var elemenet = document.getElementById('200');
     }
@@ -83,4 +82,7 @@ function load() {
 
 document.addEventListener('DOMContentLoaded', function () {
   load();
+  const quill = new Quill('#editor', {
+    theme: 'snow',
+  });
 });
