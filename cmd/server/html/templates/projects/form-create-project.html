@@ -1,0 +1,30 @@
+<div class="flex flex-col gap-4">
+    <form id="mainForm" hx-post="/ui/projects/form/submit" class="flex flex-col gap-3" hx-trigger="submit" hx-ext="json-enc" hx-target="#response" hx-swap="#mainForm" hx-validate>
+    <div class="form-control w-full flex flex-col gap-1">
+        <label for="title" class=" font-bold text-2xl"><small>Give it a title</small></label>
+        <input type="text" name="title" placeholder="" hx-trigger="validate()" class="p-2 border border-1  rounded-lg " required >
+    </div>
+    <div class="form-control w-full flex flex-col gap-1">
+        <label for="content" class=" font-bold text-2xl"><small>Add some content</small></label>
+        <textarea type="text" hidden name="content" placeholder="" class="p-2 border border-1  rounded-lg " required ></textarea>
+        <div id="editor">
+            <p>Hello World!</p>
+            <p>Some initial <strong>bold</strong> text</p>
+            <p><br /></p>
+        </div>
+    </div>
+    <div class="form-control w-full flex flex-col gap-1">
+        <label for="link" class=" font-bold text-2xl"><small>Link</small></label>
+        <input type="url" name="link" placeholder="" class="p-2 border border-1  rounded-lg " required >
+    </div>
+    <div class="form-control w-full flex flex-col">
+        <label for="tags" class=" font-bold text-2xl"><small>Add some tags</small></label>
+        <div class="border border-1 rounded-lg">
+            <input type="text" name="tagify" required>
+        </div>
+        <input type="text" name="tags" hidden disabled required>
+        </div>
+        <button id="submit" type="submit" class="p-2 border border-1  cursor-pointer rounded-lg hover:bg-red-500">submit</button>
+    </form>
+    <div id="response" class="flex flex-col gap-2"></div>
+</div>

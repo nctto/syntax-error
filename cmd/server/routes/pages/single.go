@@ -36,8 +36,6 @@ func InitializeSingleProjectPage(router *gin.Engine) {
 			return
 		}
 
-		commentsView := cm.CommentsToCommentView(comments)
-
 		projectView := pr.ProjectToProjectView(project)
 		c.HTML(200, "single-project-page.html", gin.H{
 			"title": "syntax error", 
@@ -54,7 +52,7 @@ func InitializeSingleProjectPage(router *gin.Engine) {
 			"Awards": projectView.Awards,
 			"AwardsTotal": projectView.AwardsTotal,
 			"Tags": projectView.Tags,
-			"Comments": commentsView,
+			"Comments": comments,
 		})
 })
 }

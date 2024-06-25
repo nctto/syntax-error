@@ -10,38 +10,40 @@ import (
 
 var commentCollection = db.GetCollection("comments")
 
-func DbGetAllComments(page int, limit int, sortBy string, user interface{} , targetID primitive.ObjectID) ([]Comment, error) {
-
-	var comments []Comment
-	pipeline := GetCommentsPipeline(page, limit, sortBy, user, targetID)
+func DbGetAllComments(page int, limit int, sortBy string, user interface{}, targetID primitive.ObjectID) (CommentPaginated, error) {
+	var comments CommentPaginated
+	
+	pipeline := GetCommentsPaginatedPipeline(page, limit, sortBy, targetID)
 	if user != nil {
 		nickname := user.(map[string]interface{})["nickname"].(string)
-		
 		if nickname != "" {
 			pipeline = AddCommentsVotedPipeline(pipeline, nickname)
 		}
 	}
-			
-	pipeline = AddCommentsPipelineSorter(pipeline, sortBy)	
+	pipeline = AddCommentsPipelineSorter(pipeline, sortBy)
 	cursor, err := commentCollection.Aggregate(context.Background(), pipeline)
 	if err != nil {
-		return comments, err
+		return CommentPaginated{}, err
 	}
+	
+	total,_ := commentCollection.CountDocuments(context.Background(), bson.M{"target_id": targetID })
 
 	defer cursor.Close(context.Background())
-
 	for cursor.Next(context.Background()) {
 		var comment Comment
 		cursor.Decode(&comment)
-		comment.Replies, err = DbGetAllComments(1, 10, "new", user, comment.ID)
-		if err != nil {
-			comment.Replies = []Comment{}
-		}
-		comments = append(comments, comment)
-	}
 
+		replies, err := DbGetAllComments(1, 5, "best", user, comment.ID)
+		if err != nil {
+			comment.Replies = CommentPaginated{}
+		}
+		comment.Replies = replies
+		comments.Data = append(comments.Data, CommentToView(comment))
+	}
+	comments.Pagination = GetPagination(page, limit, "best", int64(total), targetID)
 	return comments, nil
 }
+
 
 func DbCommentExists(id primitive.ObjectID) (bool, error) {
 	count, err := commentCollection.CountDocuments(context.Background(), bson.M{"_id": id})

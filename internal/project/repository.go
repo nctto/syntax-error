@@ -2,7 +2,6 @@ package project
 
 import (
 	"context"
-	cmt "go-api/internal/comment"
 	"go-api/pkg/db"
 	"time"
 
@@ -19,7 +18,6 @@ func DbGetAllProjects(page int, limit int, sortBy string, user interface{} ) ([]
 	
 	if user != nil {
 		nickname := user.(map[string]interface{})["nickname"].(string)
-
 		if nickname != "" {
 			pipeline = AddProjectsVotedPipeline(pipeline, nickname)
 		}
@@ -85,13 +83,7 @@ func DbGetProjectID(id primitive.ObjectID, user interface{}) (Project, error) {
 	for cursor.Next(context.Background()) {
 		cursor.Decode(&project)
 	}
-
-	comments, err := cmt.DbGetAllComments(1, 10, "best", user, id)
-	if err != nil {
-		return project, err
-	}
 	
-	project.Comments = comments
 	return project, nil
 }
 

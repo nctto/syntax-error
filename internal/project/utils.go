@@ -1,7 +1,6 @@
 package project
 
 import (
-	cm "go-api/internal/comment"
 	utils "go-api/pkg/utils"
 	"strconv"
 
@@ -55,9 +54,7 @@ func ProjectToProjectView(project Project) ProjectView {
 		CommentsTotal: project.CommentsTotal,
 		Awards: project.Awards,
 		AwardsTotal: project.AwardsTotal,
-		Comments: cm.CommentsPaginatedView(project.ID, project.Comments, int64(project.CommentsTotal), 10, 1, "best"),
 		CreatedAt: utils.DateToString(project.CreatedAt),
-
 	}
 }
 
@@ -67,6 +64,31 @@ func ProjectsToProjectView(projects []Project) []ProjectView {
 		projectView = append(projectView, ProjectToProjectView(project))
 	}
 	return projectView
+}
+
+func GetPagination(page int, limit int, sortBy string, total int64) Pagination {
+	pagination := Pagination{}
+	pagination.Page = page
+	pagination.Limit = limit
+	pagination.SortBy = sortBy
+	pagination.TotalPages = total / int64(limit)
+	pagination.TotalRecords = total
+	pagination.CurrentPage = int64(page)
+	
+	if page < int(pagination.TotalPages) {
+		pagination.HasNext = true
+	} else {
+		pagination.HasNext = false
+	}
+
+	if page == 0 {
+		pagination.HasPrev = false
+	} else {
+		pagination.HasPrev = true
+	}
+	pagination.NextLink = "?page=" + strconv.Itoa(page+1) + "&limit=" + strconv.Itoa(limit)
+	pagination.PrevLink = "?page=" + strconv.Itoa(page-1) + "&limit=" + strconv.Itoa(limit)
+	return pagination
 }
 
 func ProjectPaginatedView(projects []Project, totalRecords int64, page int, limit int, sortBy string) ProjectPaginated {
@@ -80,19 +102,20 @@ func ProjectPaginatedView(projects []Project, totalRecords int64, page int, limi
 	pagination.TotalPages = totalRecords / int64(limit)
 	pagination.TotalRecords = totalRecords
 	pagination.CurrentPage = int64(page)
+	
 	if page < int(pagination.TotalPages) {
 		pagination.HasNext = true
 	} else {
 		pagination.HasNext = false
 	}
 
-	if page > 0 {
-		pagination.HasPrev = true
-	} else {
+	if page == 0 {
 		pagination.HasPrev = false
+	} else {
+		pagination.HasPrev = true
 	}
-	pagination.NextLink = "/api/projects?page=" + strconv.Itoa(page+1) + "&limit=" + strconv.Itoa(limit)
-	pagination.PrevLink = "/api/projects?page=" + strconv.Itoa(page-1) + "&limit=" + strconv.Itoa(limit)
+	pagination.NextLink = "?page=" + strconv.Itoa(page+1) + "&limit=" + strconv.Itoa(limit)
+	pagination.PrevLink = "?page=" + strconv.Itoa(page-1) + "&limit=" + strconv.Itoa(limit)
 	ProjectPaginated.Pagination = pagination
 
 	return ProjectPaginated
@@ -115,7 +138,6 @@ func ProjectsDefaultQueryParams(c *gin.Context) (int, int, string) {
 	page := c.Query("page")
 	limit := c.Query("limit")
 	sortBy := c.Query("sort_by")
-
 	var p, l int = 0, 0
 	if page == "" {
 		p = 1
@@ -171,7 +193,6 @@ func GetPipeline(pipeline []bson.M) []bson.M {
 			"awards": bson.M{"$slice": []interface{}{"$awards", 3}},
 		}},
 	}
-
 	pipeline = append(pipeline, dflt...)
 	return pipeline
 }

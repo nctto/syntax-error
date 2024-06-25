@@ -15,11 +15,12 @@ type Project struct {
 	AuthorID string 			`json:"author_id" bson:"author_id,omitempty"`
 	Link	 string             `json:"link" bson:"link"`
 	Tags	 []string            `json:"tags" bson:"tags,omitempty"`
+	Community primitive.ObjectID `json:"community" bson:"community"`
 	VotesTotal int32            	`json:"votes_total" bson:"votes_total,omitempty"`
 	Voted	 bool            	`json:"voted" bson:"voted,omitempty"`
 	CreatedAt primitive.DateTime `json:"created_at" bson:"created_at"`
 	CommentsTotal int 			 `json:"comments_total" bson:"comments_total,omitempty"`
-	Comments []cm.Comment 		`json:"comments" bson:"comments,omitempty"`
+	Comments []cm.CommentPaginated 		`json:"comments" bson:"comments,omitempty"`
 	Image string 				`json:"image" bson:"image,omitempty"`
 	Awards  []aw.Award 			`json:"awards" bson:"awards,omitempty"`
 	AwardsTotal  int 			`json:"awards_total" bson:"awards_total,omitempty"`
@@ -32,11 +33,11 @@ type ProjectView struct {
 	AuthorID string `json:"author_id" bson:"author_id,omitempty"`
 	Link	 string `json:"link" bson:"link"`
 	Tags	 []string `json:"tags" bson:"tags,omitempty"`
+	Community string `json:"community" bson:"community"`
 	Image	 string `json:"image" bson:"image,omitempty"`
 	VotesTotal	 int32 `json:"votes_total" bson:"votes_total,omitempty"`
 	Voted	 bool  `json:"voted" bson:"voted,omitempty"`
 	CommentsTotal int `json:"comments_total" bson:"comments_total,omitempty"`
-	Comments cm.CommentPaginated `json:"comments" bson:"comments,omitempty"`
 	Awards []aw.Award `json:"awards" bson:"awards,omitempty"`
 	AwardsTotal int `json:"awards_total" bson:"awards_total,omitempty"`
 	CreatedAt string `json:"created_at" bson:"created_at"`

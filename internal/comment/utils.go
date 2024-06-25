@@ -1,9 +1,8 @@
 package comment
 
 import (
+	"go-api/pkg/utils"
 	"strconv"
-
-	utils "go-api/pkg/utils"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -66,10 +65,91 @@ func CommentsDefaultQueryParams(c *gin.Context) (int, int, string) {
 	return p, l, sortBy
 }
 
-func GetCommentsPipeline(page int, limit int, sortBy string, user interface{}, projectID primitive.ObjectID) []bson.M {
+func GetPipeline(pipeline []bson.M) []bson.M {
+	dflt := []bson.M{
+		{"$lookup": bson.M{
+			"from":         "votes",
+			"localField":   "_id",
+			"foreignField": "target_id",
+			"as":           "votes",
+		}},
+		{"$lookup": bson.M{
+			"from":         "comments",
+			"localField":   "_id",
+			"foreignField": "target_id",
+			"as":           "comments",
+		}},
+		{"$lookup": bson.M{
+			"from":         "awards",
+			"localField":   "_id",
+			"foreignField": "target_id",
+			"as":           "awards",
+		}},
+		{"$addFields": bson.M{
+			"votes_total": bson.M{"$size": "$votes"},
+		}},
+		{"$addFields": bson.M{
+			"comments_total": bson.M{"$size": "$comments"},
+		}},
+		{"$addFields": bson.M{
+			"awards_total": bson.M{"$size": "$awards"},
+		}},
+		{"$addFields": bson.M{
+			"awards": bson.M{"$slice": []interface{}{"$awards", 3}},
+		}},
+	}
+	pipeline = append(pipeline, dflt...)
+	return pipeline
+}
+
+func GetCommentsPaginatedPipeline(page int, limit int, sortBy string, targetID primitive.ObjectID) []bson.M {
+	skip := int64(page*limit - limit)
+	if sortBy == "best" {
+		pipeline := []bson.M{
+			{
+				"$match": bson.M{"target_id": targetID},
+			},
+			{
+				"$lookup": bson.M{
+					"from":         "votes",
+					"localField":   "_id",
+					"foreignField": "target_id",
+					"as":           "votes",
+				},
+			},
+			{
+				"$addFields": bson.M{
+					"votes_total": bson.M{"$size": "$votes"},
+				},
+			},
+			{
+				"$sort": bson.M{"votes_total": -1},
+			},
+			{
+				"$skip": skip,
+			},
+			{
+				"$limit": limit,
+			},
+		};
+		pipeline = GetPipeline(pipeline)
+		return pipeline
+	}
+	pipeline := []bson.M{
+		{
+			"$match": bson.M{"target_id": targetID},
+		},
+		{"$skip": skip},
+		{"$limit": limit},
+	}
+	pipeline = GetPipeline(pipeline)
+	return pipeline
+}
+
+func GetCommentsPipeline(page int, limit int, sortBy string, user interface{}, targetID primitive.ObjectID) []bson.M {
 	skip := int64(page*limit - limit)
 	pipeline := []bson.M{
-		{"$match": bson.M{"target_id": projectID}},
+		{"$match": bson.M{"target_id": targetID}},
 		{"$skip": skip},
 		{"$limit": limit},
 		{"$lookup": bson.M{
@@ -87,37 +167,13 @@ func GetCommentsPipeline(page int, limit int, sortBy string, user interface{}, p
 }
 
 
-func CommentToCommentView(comment Comment) CommentView {
-	return CommentView{
-		ID: ObjectIdToString(comment.ID),
-		TargetID: ObjectIdToString(comment.TargetID),
-		Content: comment.Content,
-		AuthorID: comment.AuthorID,
-		CreatedAt: utils.DateToString(comment.CreatedAt),
-		VotesTotal: comment.VotesTotal,
-		Voted: comment.Voted,
-		Replies: CommentsToCommentView(comment.Replies),
-	}
-}
-
-func CommentsToCommentView(comments []Comment) []CommentView {
-	var commentView []CommentView
-	for _, comment := range comments {
-		commentView = append(commentView, CommentToCommentView(comment))
-	}
-	return commentView
-}
-
-func CommentsPaginatedView(projectID primitive.ObjectID, comments []Comment, totalRecords int64, page int, limit int, sortBy string) CommentPaginated {
-	ProjectPaginated := CommentPaginated{}
-	ProjectPaginated.Data = CommentsToCommentView(comments)
-
+func GetPagination(page int, limit int, sortBy string, total int64, id primitive.ObjectID) Pagination {
 	pagination := Pagination{}
 	pagination.Page = page
 	pagination.Limit = limit
 	pagination.SortBy = sortBy
-	pagination.TotalPages = totalRecords / int64(limit)
-	pagination.TotalRecords = totalRecords
+	pagination.TotalPages = total / int64(limit)
+	pagination.TotalRecords = total
 	pagination.CurrentPage = int64(page)
 	if page < int(pagination.TotalPages) {
 		pagination.HasNext = true
@@ -130,12 +186,10 @@ func CommentsPaginatedView(projectID primitive.ObjectID, comments []Comment, tot
 	} else {
 		pagination.HasPrev = false
 	}
-	pagination.NextLink = "/api/comments/"+ ObjectIdToString(projectID) +"?page=" + strconv.Itoa(page+1) + "&limit=" + strconv.Itoa(limit)
-	pagination.PrevLink = "/api/comments/"+ ObjectIdToString(projectID) +"?page=" + strconv.Itoa(page-1) + "&limit=" + strconv.Itoa(limit)
-	ProjectPaginated.Pagination = pagination
-	return ProjectPaginated
+	pagination.NextLink = "/api/comments/"+ ObjectIdToString(id) +"?page=" + strconv.Itoa(page+1) + "&limit=" + strconv.Itoa(limit)
+	pagination.PrevLink = "/api/comments/"+ ObjectIdToString(id) +"?page=" + strconv.Itoa(page-1) + "&limit=" + strconv.Itoa(limit)
+	return pagination
 }
-
 
 func AddCommentsVotedPipeline(pipeline []bson.M, authorID string) []bson.M {
 	pipeline = append(pipeline, bson.M{"$lookup": bson.M{
@@ -168,4 +222,17 @@ func AddCommentsVotedPipeline(pipeline []bson.M, authorID string) []bson.M {
 		},
 	})
 	return pipeline
+}
+
+func CommentToView(comment Comment) CommentView {
+	commentView := CommentView{}
+	commentView.ID = ObjectIdToString(comment.ID)
+	commentView.Content = comment.Content
+	commentView.TargetID = ObjectIdToString(comment.TargetID)
+	commentView.AuthorID = comment.AuthorID
+	commentView.CreatedAt = utils.DateToString(comment.CreatedAt)
+	commentView.VotesTotal = comment.VotesTotal
+	commentView.Voted = comment.Voted
+	commentView.Replies = comment.Replies
+	return commentView
 }

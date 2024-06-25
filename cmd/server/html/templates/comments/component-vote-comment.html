@@ -1,6 +1,5 @@
 <div id="comment-vote-button-{{ .ID }}">
-    <button class="text-xs text-slate-700 hover:text-slate-400 flex flex-row gap-1 align-middle items-center liked-{{ .Voted }}"
-    hx-post="/ui/vote/submit/{{ .ID }}?t=c" hx-target="#comment-vote-button-{{.ID}}">
+    <a href="/auth/login" class="text-xs  hover: flex flex-row gap-1 align-middle items-center liked-{{ .Voted }} border border-1 rounded-full pr-2 pl-0">
         <div>
             {{ .VotesTotal }}
         </div>
@@ -16,5 +15,5 @@
             </svg>
         {{ end }}
         Vote
-    </button>
+    </a>
 </div>

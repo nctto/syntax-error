@@ -2,6 +2,7 @@ package project
 
 import (
 	"encoding/json"
+	"fmt"
 	usr "go-api/internal/user"
 	wlt "go-api/internal/wallet"
 	"net/http"
@@ -70,20 +71,22 @@ func GetProjectByID(c *gin.Context) {
 	session := sessions.Default(c)
 	user := session.Get("profile")
 	
+	
 	idParam := c.Param("id")
 	id, err := primitive.ObjectIDFromHex(idParam)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid  ID"})
 		return
-	}
+		}
+	fmt.Println("Getting Project by ID", id, user)
 
 	project, err := DbGetProjectID(id, user)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "Project not found"})
 		return
 	}
-
-	c.JSON(http.StatusOK, project)
+	projectView := ProjectToProjectView(project)
+	c.JSON(http.StatusOK, projectView)
 }
 
 func CreateProject(c *gin.Context) {
@@ -193,5 +196,63 @@ func GetHTMLCreateForm(c *gin.Context) {
 		"title": "Submit Project", 
 		"session_user": user,
 		"balance": balance,
+	})
+}
+
+func GetHTMLAllProjects(c *gin.Context) {
+	session := sessions.Default(c)
+	user := session.Get("profile")
+
+	page, limit, sortBy := ProjectsDefaultQueryParams(c)
+	projects, total,  err := DbGetAllProjects(page, limit, sortBy, user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+	paginatedProjects := ProjectPaginatedView(projects, total, page, limit, sortBy)
+
+	c.HTML(200, "list-projects.html", gin.H{
+		"session_user": user,
+		"projects": paginatedProjects,
+	})
+}
+
+func GetHTMLSubmitProjectForm(c *gin.Context) {
+		
+	session := sessions.Default(c)
+	user := session.Get("profile")
+
+	if user == nil {
+		c.Redirect(http.StatusFound, "/auth/login")
+	}
+
+	var errors = []gin.H{}
+	var newProject Project
+	if err := c.BindJSON(&newProject); err != nil {
+		errors = append(errors, gin.H{"message": err.Error()})
+	}
+	newProject.AuthorID = user.(map[string]interface{})["nickname"].(string)
+	if !RequiredFields(newProject) {
+		errors = append(errors, gin.H{"message": "Missing required fields"})
+	}
+
+	if len(errors) > 0 {
+		c.HTML(200, "response-create-project.html", gin.H{
+			"submitted": false,
+			"message": "Error creating project",
+			"errors": errors,
+		})
+		return
+	}
+
+	id, err := DbCreateProject(newProject)
+	if err != nil {
+		errors = append(errors, gin.H{"message": err.Error()})
+	}
+	newProject.ID = id
+	c.HTML(200, "response-create-project.html", gin.H{
+		"submitted": true,
+		"message": "Project created successfully",
+		"errors": errors,
 	})
 }

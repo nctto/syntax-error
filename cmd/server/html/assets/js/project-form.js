@@ -75,7 +75,6 @@ function load() {
       alert('Please fix the errors before submitting the projects');
     } else {
       document.querySelector('form').reset();
-      var elemenet = document.getElementById('200');
     }
   });
 }

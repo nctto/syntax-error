@@ -9,7 +9,7 @@ type Comment struct {
 	TargetID 	primitive.ObjectID `json:"target_id" bson:"target_id"`
 	AuthorID 	string `json:"author_id" bson:"author_id"`
 	Content 	string `json:"content" bson:"content"`
-	Replies		[]Comment `json:"replies" bson:"replies,omitempty"`
+	Replies		CommentPaginated `json:"replies" bson:"replies,omitempty"`
 	CreatedAt  primitive.DateTime `json:"created_at" bson:"created_at"`
 	Voted 		bool `json:"voted" bson:"voted,omitempty"`
 	VotesTotal int32 `json:"votes_total" bson:"votes_total,omitempty"`
@@ -20,7 +20,7 @@ type CommentView struct {
 	TargetID 	string `json:"target_id"`
 	AuthorID 	string `json:"author_id"`
 	Content 	string `json:"content"`
-	Replies		[]CommentView `json:"replies"`
+	Replies		CommentPaginated `json:"replies"`
 	CreatedAt  string `json:"created_at"`
 	Voted		bool `json:"voted"`
 	VotesTotal int32 `json:"votes_total"`
@@ -40,6 +40,6 @@ type Pagination struct {
 }
 
 type CommentPaginated struct {
-	Data []CommentView `json:"comments"`
-	Pagination Pagination `json:"pagination"`
+	Data []CommentView `json:"data"`
+	Pagination Pagination `json:"pag"`
 }
