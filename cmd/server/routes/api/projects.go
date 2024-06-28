@@ -92,4 +92,9 @@ func InitializeProjects(router *gin.Engine) {
 
 	router.GET("/ws/:id", middleware.IsAuthenticated, HandleSocket)
 
+
+
+	router.POST("/api/upload", middleware.IsAuthenticated, project.UploadFile)
+
+
 }

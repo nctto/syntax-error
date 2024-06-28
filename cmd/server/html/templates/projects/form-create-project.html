@@ -1,14 +1,70 @@
+<style>
+.dropzone {
+  width: 98%;
+  margin: 1%;
+  border: 2px dashed #3498db !important;
+  border-radius: 5px;
+  transition: 0.2s;
+}
+
+.dropzone.dz-drag-hover {
+  border: 2px solid #3498db !important;
+}
+
+.dz-message.needsclick img {
+  width: 50px;
+  display: block;
+  margin: auto;
+  opacity: 0.6;
+  margin-bottom: 15px;
+}
+
+span.plus {
+  display: none;
+}
+
+.dropzone.dz-started .dz-message {
+  display: inline-block !important;
+  width: 120px;
+  float: right;
+  border: 1px solid rgba(238, 238, 238, 0.36);
+  border-radius: 30px;
+  height: 120px;
+  margin: 16px;
+  transition: 0.2s;
+}
+.dropzone.dz-started .dz-message span.text {
+  display: none;
+}
+.dropzone.dz-started .dz-message span.plus {
+  display: block;
+  font-size: 70px;
+  color: #AAA;
+  line-height: 110px;
+}
+</style>
 <div class="flex flex-col gap-4">
-    <form id="mainForm" hx-post="/ui/projects/form/submit" class="flex flex-col gap-3" hx-trigger="submit" hx-ext="json-enc" hx-target="#response" hx-swap="#mainForm" hx-validate>
+    <div class="flex flex-col">
+        <a href="/create/community" class="text-xs cursor-pointer text-right text-blue-300">Create Community</a>
+        <div class="border border-1 rounded-lg flex flex-col">
+            <input name='disabled-user-input' placeholder="Select Community" class="h-10" >
+        </div>
+        
+    </div>
+    <div class="flex flex-col gap-3">
+        <p class="font-bold">Type</p>
+        <div>
+            <button id="type-text" class="p-1 pl-2 pr-2 border border-1 cursor-pointer rounded-lg text-sm">Text</button>
+            <button id="type-image" class="p-1 pl-2 pr-2 border border-1  cursor-pointer rounded-lg text-sm">Image & Video</button>
+        </div>
+    </div>
+    <form id="mainForm-text" hx-post="/ui/projects/form/submit" class="flex flex-col gap-3" hx-trigger="submit" hx-ext="json-enc" hx-target="#response" hx-swap="#mainForm" hx-validate>
     <div class="form-control w-full flex flex-col gap-1">
-        <label for="title" class=" font-bold text-2xl"><small>Give it a title</small></label>
-        <input type="text" name="title" placeholder="" hx-trigger="validate()" class="p-2 border border-1  rounded-lg " required >
+        <input type="text" name="title" hx-trigger="validate()" placeholder="Title" class="p-2 border border-1  rounded-lg " required >
     </div>
     <div class="form-control w-full flex flex-col gap-1">
-        <label for="content" class=" font-bold text-2xl"><small>Add some content</small></label>
         <textarea type="text" hidden name="content" placeholder="" class="p-2 border border-1  rounded-lg " required ></textarea>
         <div id="editor">
-            <p>Hello World!</p>
             <p>Some initial <strong>bold</strong> text</p>
             <p><br /></p>
         </div>
@@ -24,7 +80,29 @@
         </div>
         <input type="text" name="tags" hidden disabled required>
         </div>
-        <button id="submit" type="submit" class="p-2 border border-1  cursor-pointer rounded-lg hover:bg-red-500">submit</button>
+        <button id="submit" type="submit" class="p-2 border border-1  cursor-pointer rounded-lg ">submit</button>
+    </form>
+    <form id="mainForm-image" hx-post="/ui/projects/form/submit" class="hidden flex flex-col gap-3" hx-trigger="submit" hx-ext="json-enc" hx-target="#response" hx-swap="#mainForm" hx-validate>
+        <div class="form-control w-full flex flex-col gap-1">
+            <input type="text" name="title" hx-trigger="validate()" placeholder="Title" class="p-2 border border-1  rounded-lg " required >
+        </div>
+        <div class="flex flex-row gap-1">
+            <div class="dz-message needsclick flex w-1/3 bg-gray-200 p-5 justify-center items-center rounded-xl">
+                <span class="text-xs text-center">
+                <img class="w-1/2" src="http://www.freeiconspng.com/uploads/------------------------------iconpngm--22.png" alt="Camera" />
+                    Drop files here or click to upload.
+                </span>
+                <span class="plus">+</span>
+            </div>
+        </div>
+        <div class="form-control w-full flex flex-col gap-1">
+            <label for="link" class=" font-bold text-2xl"><small>Link</small></label>
+            <input type="url" name="link" placeholder="" class="p-2 border border-1  rounded-lg " required >
+        </div>
+        <button id="submit" type="submit" class="p-2 border border-1  cursor-pointer rounded-lg ">submit</button>
     </form>
     <div id="response" class="flex flex-col gap-2"></div>
+    <script>
+        Dropzone.discover();
+    </script>
 </div>

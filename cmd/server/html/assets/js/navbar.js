@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const nav = document.getElementById('nav');
     const navTop = nav.offsetTop;
     const toolbar = document.getElementById('toolbar');
+    console.log(toolbar.offsetTop);
     const toolbarTop = toolbar.offsetTop - 50;
     const projects = document.getElementById('projects');
     const projectsTop = projects.offsetTop;
@@ -14,13 +15,13 @@ document.addEventListener('DOMContentLoaded', function () {
         toolbar.classList.remove(c);
       });
       toolbar.style.width = '';
-      nav.classList.remove('bg-white');
+      // nav.classList.remove('bg-white');
     } else {
       tclass.forEach((c) => {
         toolbar.classList.add(c);
       });
       toolbar.style.width = `${projectsWidth}px`;
-      nav.classList.add('bg-white');
+      // nav.classList.add('bg-white');
     }
   });
 });

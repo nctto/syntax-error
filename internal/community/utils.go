@@ -12,6 +12,7 @@ func RequiredFields(award Community) bool {
 	if award.Name == "" {
 		return false
 	}
+	
 	return true
 }
 

@@ -58,6 +58,11 @@ function load() {
       valuesArr.map((item) => item.value).join(','),
   });
 
+  new Tagify(document.querySelector('input[name=disabled-user-input]'), {
+    whitelist: ['foo', 'bar', 'baz'],
+    userInput: false,
+  });
+
   document
     .querySelector('input[name=tagify]')
     .addEventListener('change', function (e) {
@@ -76,6 +81,25 @@ function load() {
     } else {
       document.querySelector('form').reset();
     }
+  });
+
+  const typeImageBtn = document.getElementById('type-image');
+  const typeVideoForm = document.getElementById('mainForm-image');
+
+  const typeTextBtn = document.getElementById('type-text');
+  const typeTextForm = document.getElementById('mainForm-text');
+
+  typeImageBtn.addEventListener('click', function (e) {
+    console.log('TypeVideo clicked');
+    e.preventDefault();
+    typeVideoForm.classList.remove('hidden');
+    typeTextForm.classList.add('hidden');
+  });
+
+  typeTextBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    typeTextForm.classList.remove('hidden');
+    typeVideoForm.classList.add('hidden');
   });
 }
 

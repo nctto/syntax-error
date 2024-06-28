@@ -67,17 +67,29 @@ func New(auth *authenticator.Authenticator) *gin.Engine {
 	// serve the static files
 	router.Static("/assets", assets_dir)
 	router.LoadHTMLGlob(templates_dir)
-	
+
+	// initialize the routes
 	routes.InitializeAuth(router, auth)
+
+	// API routes
 	api.InitializeProjects(router)
 	api.InitializeVotes(router)
 	api.InitializeComments(router)
+	
+	// UI routes - Rendered HTML
 	ui.InitializeCommentsUI(router)
 	ui.InitializeVotesUI(router)
-	// ui.InitializeProjectsUI(router)
+	ui.InitializeProjectsUI(router)
+	
+	
+	// Pages routes
 	pages.InitializeCreatePage(router)
 	pages.InitializeHomePage(router)
 	pages.InitializeSingleProjectPage(router)
 	pages.InitializeSingleUserPage(router)
+
+
+
+
 	return router
 }

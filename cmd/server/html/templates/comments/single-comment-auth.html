@@ -28,6 +28,9 @@
                 {{ template "single-comment-auth.html" . }}
             {{ end }}
         </div>
+        <div>
+            <button id="load-more-replies-{{ .ID }}" class="text-xs text-gray-400">Load more replies</button>
+        </div>
         {{ end }}
         </div>
     </div>

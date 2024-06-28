@@ -45,7 +45,7 @@
     {{ range .projects.Data }}
         {{ template "single-project.html" .}}
     {{end}}
-    <div class="text-xl text-red-500 flex flex-row gap-3">
+    <div class="text-sm flex flex-row gap-3 justify-center items-center">
         {{ if .projects.Pagination.HasPrev }}
             <button type="button" hx-get="/ui/projects/all{{.projects.Pagination.PrevLink }}" hx-target="#projects">
                 Prev

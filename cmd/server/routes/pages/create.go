@@ -21,17 +21,39 @@ func InitializeCreatePage(router *gin.Engine) {
 			c.Redirect(http.StatusFound, "/auth/login")
 		}
 		nickname := usr.UserNickName(user)
-		balance, err := wlt.DbGetUserWalletBalanceByNickName(nickname)
+		var balance int
+		b, err := wlt.DbGetUserWalletBalanceByNickName(nickname)
 		if err != nil {
-			c.HTML(200, "create-project-page.html", gin.H{
-				"title": "Submit Projec", 
-				"session_user": user,
-				"balance": "XXXX",
-			})
+			balance = 0
+		} else {
+			balance = b
 		}
 		c.HTML(200, "create-project-page.html", gin.H{
 			"title": "Submit Project", 
 			"session_user": user,
 			"balance": balance,
 		})
-})}
+	})
+	
+	router.GET("/create/community", middleware.IsAuthenticated, func(c *gin.Context) {
+		session := sessions.Default(c)
+		user := session.Get("profile")
+		if user == nil {
+			c.Redirect(http.StatusFound, "/auth/login")
+		}
+		nickname := usr.UserNickName(user)
+		
+		var balance int
+		b, err := wlt.DbGetUserWalletBalanceByNickName(nickname)
+		if err != nil {
+			balance = 0
+		} else {
+			balance = b
+		}
+		c.HTML(200, "create-community-page.html", gin.H{
+			"title": "Submit Project", 
+			"session_user": user,
+			"balance": balance,
+		})
+	})
+}
