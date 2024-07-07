@@ -1,4 +1,4 @@
-<div id="project-{{ .ID }}" class="p-5 rounded-xl gap-4 border border-1 border w-full">
+<div id="post-{{ .ID }}" class="p-5 rounded-xl gap-4 border border-1 border w-full">
     <div class="flex flex-col gap-1 overflow-hidden">
         <div class="flex flex-col gap-2">
             <div class="flex flex-row gap-1">
@@ -36,7 +36,7 @@
         </div>
         <div class="content flex flex-col gap-3">
             <div class="w-full">
-                <img src="http://placehold.it/500" class="w-full h-auto rounded-xl" alt="project image">
+                <img src="http://placehold.it/500" class="w-full h-auto rounded-xl" alt="post image">
             </div>
             <div class="flex flex-col">
                 <a href="/{{.ID}}" class="text-sm  cursor-pointer truncate">
@@ -51,7 +51,7 @@
             <div class="w-full border border-t-1 border-b-0 border-l-0 border-r-0 border-gray-200 pb-3"></div>
         </div>
         <div class="flex flex-row gap-2">
-            {{ template "component-vote-project.html" . }}
+            {{ template "component-vote-post.html" . }}
             <a href="/{{ .ID }}" class="text-xs  cursor-pointer border border-1 rounded-xl p-1 pl-2 pr-2">
                 {{ .CommentsTotal }} Comments
             </a>

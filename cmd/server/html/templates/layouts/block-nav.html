@@ -6,19 +6,19 @@
     <div id="nav-right" class="flex flex-row gap-2 justify-center items-center align-middle">
     </div>
 </nav>
-<!-- {{ if .session_user }}
+{{ if .session_user }}
 <div class="fixed top-3 left-5 flex flex-row gap-1 z-10">
     <div class="flex flex-row gap-2 align-middle items-center cursor-pointer">
         <img src="{{ .session_user.picture }}" alt="{{ .session_user.nickname }}" class="w-5 h-15 rounded-full">
         <button id="logout" class=" text-sm">logout</button>
     </div>
 </div>
-{{ end }} -->
+{{ end }}
 {{ if .session_user }}
 <div class="fixed top-3 right-5 flex flex-row gap-1 z-10">
     {{ template "component-balance.html" . }}
     <div class="flex flex-row gap-2 align-middle items-center cursor-pointer">
-        <!-- <img src="{{ .session_user.picture }}" alt="{{ .session_user.nickname }}" class="w-5 h-15 rounded-full"> -->
+        <img src="{{ .session_user.picture }}" alt="{{ .session_user.nickname }}" class="w-5 h-15 rounded-full">
         <button id="logout" class="text-sm">base</button>
     </div>
 </div>

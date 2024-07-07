@@ -28,8 +28,8 @@ func InitializeCreatePage(router *gin.Engine) {
 		} else {
 			balance = b
 		}
-		c.HTML(200, "create-project-page.html", gin.H{
-			"title": "Submit Project", 
+		c.HTML(200, "create-post-page.html", gin.H{
+			"title": "Submit Post", 
 			"session_user": user,
 			"balance": balance,
 		})
@@ -51,7 +51,7 @@ func InitializeCreatePage(router *gin.Engine) {
 			balance = b
 		}
 		c.HTML(200, "create-community-page.html", gin.H{
-			"title": "Submit Project", 
+			"title": "Submit Post", 
 			"session_user": user,
 			"balance": balance,
 		})

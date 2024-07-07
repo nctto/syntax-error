@@ -77,29 +77,10 @@ function load() {
       errors.push(...ValidateInput({ target: input }));
     }
     if (errors.length > 0) {
-      alert('Please fix the errors before submitting the projects');
+      alert('Please fix the errors before submitting the posts');
     } else {
       document.querySelector('form').reset();
     }
-  });
-
-  const typeImageBtn = document.getElementById('type-image');
-  const typeVideoForm = document.getElementById('mainForm-image');
-
-  const typeTextBtn = document.getElementById('type-text');
-  const typeTextForm = document.getElementById('mainForm-text');
-
-  typeImageBtn.addEventListener('click', function (e) {
-    console.log('TypeVideo clicked');
-    e.preventDefault();
-    typeVideoForm.classList.remove('hidden');
-    typeTextForm.classList.add('hidden');
-  });
-
-  typeTextBtn.addEventListener('click', function (e) {
-    e.preventDefault();
-    typeTextForm.classList.remove('hidden');
-    typeVideoForm.classList.add('hidden');
   });
 }
 

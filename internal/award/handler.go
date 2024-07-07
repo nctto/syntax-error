@@ -51,10 +51,10 @@ func CreateAward(c *gin.Context) {
 		return
 	}
 
-	projectID := c.Param("projectID")
-	id, err := primitive.ObjectIDFromHex(projectID)
+	postID := c.Param("postID")
+	id, err := primitive.ObjectIDFromHex(postID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid project ID"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid post ID"})
 		return
 	}
 

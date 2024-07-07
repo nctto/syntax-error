@@ -1,0 +1,180 @@
+definitions:
+  award.Award:
+    properties:
+      author_id:
+        type: string
+      created_at:
+        type: integer
+      id:
+        type: string
+      target_id:
+        type: string
+      type:
+        type: string
+    type: object
+  comment.CommentPaginated:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/comment.CommentView'
+        type: array
+      pag:
+        $ref: '#/definitions/comment.Pagination'
+    type: object
+  comment.CommentView:
+    properties:
+      author_id:
+        type: string
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      replies:
+        $ref: '#/definitions/comment.CommentPaginated'
+      target_id:
+        type: string
+      voted:
+        type: boolean
+      votes_total:
+        type: integer
+    type: object
+  comment.Pagination:
+    properties:
+      current_page:
+        type: integer
+      has_next:
+        type: boolean
+      has_prev:
+        type: boolean
+      limit:
+        type: integer
+      next_link:
+        type: string
+      page:
+        type: integer
+      prev_link:
+        type: string
+      sort_by:
+        type: string
+      total_pages:
+        type: integer
+      total_records:
+        type: integer
+    type: object
+  post.Post:
+    properties:
+      author_id:
+        type: string
+      awards:
+        items:
+          $ref: '#/definitions/award.Award'
+        type: array
+      awards_total:
+        type: integer
+      comments:
+        items:
+          $ref: '#/definitions/comment.CommentPaginated'
+        type: array
+      comments_total:
+        type: integer
+      community:
+        type: string
+      content:
+        type: string
+      created_at:
+        type: integer
+      id:
+        type: string
+      image:
+        type: string
+      link:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+      voted:
+        type: boolean
+      votes_total:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /posts:
+    get:
+      consumes:
+      - application/json
+      description: Delete a post with the given ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/post.Post'
+      summary: Get a random post
+      tags:
+      - posts
+    post:
+      consumes:
+      - application/json
+      description: Upload a file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/post.Post'
+      summary: Upload a file
+      tags:
+      - posts
+  /posts/:id:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a post with the given ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/post.Post'
+      summary: Delete a post
+      tags:
+      - posts
+    get:
+      consumes:
+      - application/json
+      description: Get a post by ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/post.Post'
+      summary: Get a post by ID
+      tags:
+      - posts
+    put:
+      consumes:
+      - application/json
+      description: Update a post with the given title, content, link and tags
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/post.Post'
+      summary: Update a post
+      tags:
+      - posts
+swagger: "2.0"

@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	pr "go-api/internal/project"
+	pr "go-api/internal/post"
 	usr "go-api/internal/user"
 	wlt "go-api/internal/wallet"
 
@@ -17,19 +17,19 @@ func InitializeHomePage(router *gin.Engine) {
 	session := sessions.Default(c)
 	user := session.Get("profile")
 
-	page, limit, sortBy := pr.ProjectsDefaultQueryParams(c)
-	projects,total, err := pr.DbGetAllProjects(page, limit, sortBy, user)
+	page, limit, sortBy := pr.PostsDefaultQueryParams(c)
+	posts,total, err := pr.DbGetAllPosts(page, limit, sortBy, user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	paginatedProjects := pr.ProjectPaginatedView(projects, total, page, limit, sortBy)
+	paginatedPosts := pr.PostPaginatedView(posts, total, page, limit, sortBy)
 	nickname := usr.UserNickName(user)
 	if nickname == "" {
 		c.HTML(200, "home-page.html", gin.H{
 			"title": "syntax error", 
 			"session_user": user,
-			"projects": paginatedProjects,
+			"posts": paginatedPosts,
 			"balance": "XXXX",
 		})
 		return
@@ -47,7 +47,7 @@ func InitializeHomePage(router *gin.Engine) {
 		"title": "syntax error", 
 		"session_user": user,
 		"balance": balance,
-		"projects": paginatedProjects,
+		"posts": paginatedPosts,
 	})
 })
 }

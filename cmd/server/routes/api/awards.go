@@ -7,9 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InitializeAwards(router *gin.Engine) {
-	router.GET("/api/awards/:projectID", middleware.IsAuthenticated, award.GetAwards)
-	router.POST("/api/awards/:projectID/:typeID", middleware.IsAuthenticated, award.CreateAward)
-	router.GET("/api/awards/:id", middleware.IsAuthenticated, award.GetAwardByID)
-	router.DELETE("/api/awards/:id", middleware.IsAuthenticated, award.DeleteAward)
+func InitializeAwards(router *gin.RouterGroup) {
+	router.GET("/:id", middleware.IsAuthenticated, award.GetAwardByID)
+	router.POST("/:id//:postID", middleware.IsAuthenticated, award.CreateAward)
+	router.DELETE("/awards/:id", middleware.IsAuthenticated, award.DeleteAward)
 }

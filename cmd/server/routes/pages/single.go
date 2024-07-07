@@ -7,12 +7,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	cm "go-api/internal/comment"
-	pr "go-api/internal/project"
+	pr "go-api/internal/post"
 
 	"github.com/gin-contrib/sessions"
 )
 
-func InitializeSingleProjectPage(router *gin.Engine) {
+func InitializeSinglePostPage(router *gin.Engine) {
 	router.GET("/:targetID", func (c *gin.Context) {
 		session := sessions.Default(c)
 		user := session.Get("profile")
@@ -24,7 +24,7 @@ func InitializeSingleProjectPage(router *gin.Engine) {
 			return
 		}
 
-		project, err := pr.DbGetProjectID(id, user)
+		post, err := pr.DbGetPostID(id, user)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 			return
@@ -36,22 +36,22 @@ func InitializeSingleProjectPage(router *gin.Engine) {
 			return
 		}
 
-		projectView := pr.ProjectToProjectView(project)
-		c.HTML(200, "single-project-page.html", gin.H{
+		postView := pr.PostToPostView(post)
+		c.HTML(200, "single-post-page.html", gin.H{
 			"title": "syntax error", 
 			"ID": targetID,
 			"TargetID": targetID,
 			"session_user": user,
-			"Title": projectView.Title,
-			"Content": projectView.Content,
-			"AuthorID": projectView.AuthorID,
-			"CreatedAt": projectView.CreatedAt,
-			"VotesTotal": projectView.VotesTotal,
-			"Voted": projectView.Voted,
-			"CommentsTotal": projectView.CommentsTotal,
-			"Awards": projectView.Awards,
-			"AwardsTotal": projectView.AwardsTotal,
-			"Tags": projectView.Tags,
+			"Title": postView.Title,
+			"Content": postView.Content,
+			"AuthorID": postView.AuthorID,
+			"CreatedAt": postView.CreatedAt,
+			"VotesTotal": postView.VotesTotal,
+			"Voted": postView.Voted,
+			"CommentsTotal": postView.CommentsTotal,
+			"Awards": postView.Awards,
+			"AwardsTotal": postView.AwardsTotal,
+			"Tags": postView.Tags,
 			"Comments": comments,
 		})
 })

@@ -28,13 +28,13 @@
         <div class="flex flex-row">
             <div class="flex flex-col gap-4">
                 <div class="flex flex-col gap-3">
-                    {{ range .projects }}
-                        {{ template "single-project.html" .}}
+                    {{ range .posts }}
+                        {{ template "single-post.html" .}}
                     {{end}}
                 </div>
                 <div class="flex flex-row justify-center align-middle items-center">
                     <div class="text-sm">
-                        <button class="text-md" hx-get="/ui/projects/all?page={{ .nextPage }}&sort_by={{.sortBy}}" hx-target="#projects" hx-swap="innerHTML">next page</button>
+                        <button class="text-md" hx-get="/ui/posts/all?page={{ .nextPage }}&sort_by={{.sortBy}}" hx-target="#posts" hx-swap="innerHTML">next page</button>
                     </div>
                 </div>
             </div>

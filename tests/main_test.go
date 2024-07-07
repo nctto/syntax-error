@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	"go-api/internal/project"
+	"go-api/internal/post"
 
 	"github.com/alecthomas/assert/v2"
 	"github.com/appleboy/gofight/v2"
@@ -20,56 +20,56 @@ func init() {
 	gin.SetMode(gin.TestMode)
 }
 
-func TestProjects(t *testing.T) {
+func TestPosts(t *testing.T) {
 	g := gofight.New()
 	e := gin.Default()
 	server.Run()
 
-	var projectID string
-	var basePath = "/projects"
+	var postID string
+	var basePath = "/posts"
 
-	t.Run("GetProjects", func(t *testing.T) {
+	t.Run("GetPosts", func(t *testing.T) {
 		g.GET(basePath).Run(e, func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 	})
 	
-	t.Run("GetRandomProject", func(t *testing.T) {
+	t.Run("GetRandomPost", func(t *testing.T) {
 		g.GET(basePath+"/random").Run(e, func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			assert.Equal(t, http.StatusOK, r.Code)
-			var p project.Project
+			var p post.Post
 			json.Unmarshal(r.Body.Bytes(), &p)
-			projectID = p.ID.Hex()
+			postID = p.ID.Hex()
 		})
 	})
 
-	t.Run("CreateProject", func(t *testing.T) {
-		body := project.FakeProject()
+	t.Run("CreatePost", func(t *testing.T) {
+		body := post.FakePost()
 		g.POST(basePath).SetBody(body).Run(e, func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			assert.Equal(t, http.StatusCreated, r.Code)
-			var p project.Project
+			var p post.Post
 			json.Unmarshal(r.Body.Bytes(), &p)
 		})
 	})
 
-	t.Run("GetProjectByID", func(t *testing.T) {
-		g.GET(basePath+ "/"+ projectID ).Run(e, func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+	t.Run("GetPostByID", func(t *testing.T) {
+		g.GET(basePath+ "/"+ postID ).Run(e, func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 	})
 
-	t.Run("UpdateProject", func(t *testing.T) {
+	t.Run("UpdatePost", func(t *testing.T) {
 		body := `{
 			"name": "John - Updated",
 			"gender": "Does"
 		}`
-		g.PUT(basePath+"/"+ projectID).SetBody(body).Run(e, func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+		g.PUT(basePath+"/"+ postID).SetBody(body).Run(e, func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 	})
 
-	t.Run("DeleteProject", func(t *testing.T) {
-		g.DELETE(basePath + "/"+ projectID ).Run(e, func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+	t.Run("DeletePost", func(t *testing.T) {
+		g.DELETE(basePath + "/"+ postID ).Run(e, func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 	})

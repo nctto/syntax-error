@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"go-api/internal/comment"
-	"go-api/internal/project"
+	"go-api/internal/post"
 	"go-api/pkg/db"
 	"time"
 
@@ -50,8 +50,8 @@ func DbGetVoteID(id primitive.ObjectID) (Vote, error) {
 	return vote, err
 }
 
-func DbVoteExists(projectID primitive.ObjectID, user string) (bool, error) {
-	count, err := voteCollection.CountDocuments(context.Background(), bson.M{"target_id": projectID, "author_id": user})
+func DbVoteExists(postID primitive.ObjectID, user string) (bool, error) {
+	count, err := voteCollection.CountDocuments(context.Background(), bson.M{"target_id": postID, "author_id": user})
 	if err != nil {
 		fmt.Println(err)
 		return false, err
@@ -80,15 +80,15 @@ func DbDeleteVote(id primitive.ObjectID) error {
 	return err
 }
 
-func DbDeleteVoteByAuthor(projectID primitive.ObjectID, authorID string) error {
-	_, err := voteCollection.DeleteOne(context.Background(), bson.M{"target_id": projectID, "author_id": authorID})
+func DbDeleteVoteByAuthor(postID primitive.ObjectID, authorID string) error {
+	_, err := voteCollection.DeleteOne(context.Background(), bson.M{"target_id": postID, "author_id": authorID})
 	return err
 }
 
 
-func DbGetTargetVotes(projectID primitive.ObjectID) (int32, error) {
+func DbGetTargetVotes(postID primitive.ObjectID) (int32, error) {
 	var votes []Vote
-	cursor, err := voteCollection.Find(context.Background(), bson.M{"target_id": projectID})
+	cursor, err := voteCollection.Find(context.Background(), bson.M{"target_id": postID})
 	if err != nil {
 		return 0, err
 	}
@@ -105,12 +105,12 @@ func DbGetTargetVotes(projectID primitive.ObjectID) (int32, error) {
 func DbSubmitVote(target string, targetID primitive.ObjectID, authorID string) (int32, bool, error) {
 
 	if target == "p" {
-		exists, err := project.DbProjectExists(targetID)
+		exists, err := post.DbPostExists(targetID)
 		if err != nil {
 			return 0, false, err
 		}
 		if !exists {
-			return 0, false, fmt.Errorf("project not found")
+			return 0, false, fmt.Errorf("post not found")
 		}	
 	}
 

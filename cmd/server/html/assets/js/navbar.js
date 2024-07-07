@@ -6,11 +6,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const toolbar = document.getElementById('toolbar');
     console.log(toolbar.offsetTop);
     const toolbarTop = toolbar.offsetTop - 50;
-    const projects = document.getElementById('projects');
-    const projectsTop = projects.offsetTop;
-    const projectsWidth = projects.offsetWidth - 10;
+    const posts = document.getElementById('posts');
+    const postsTop = posts.offsetTop;
+    const postsWidth = posts.offsetWidth - 10;
     const tclass = ['fixed', 'top-3', 'z-10'];
-    if (scrollY < projectsTop) {
+    if (scrollY < postsTop) {
       tclass.forEach((c) => {
         toolbar.classList.remove(c);
       });
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
       tclass.forEach((c) => {
         toolbar.classList.add(c);
       });
-      toolbar.style.width = `${projectsWidth}px`;
+      toolbar.style.width = `${postsWidth}px`;
       // nav.classList.add('bg-white');
     }
   });

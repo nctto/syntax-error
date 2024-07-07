@@ -27,9 +27,9 @@ exports = async function (changeEvent) {
       await collection2.insertOne({
         balance_prev: wallet.balance,
         amount: 10,
-        type: 'project',
+        type: 'post',
         user_id: wallet.author_id,
-        project_id: doc._id,
+        post_id: doc._id,
         createdAt: new Date(),
       });
 

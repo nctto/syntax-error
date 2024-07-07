@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"go-api/internal/project"
+	"go-api/internal/post"
 	usr "go-api/internal/user"
 
 	"github.com/gin-contrib/sessions"
@@ -29,7 +29,7 @@ func InitializeSingleUserPage(router *gin.Engine) {
 			return
 		}
 
-		projects, err := project.DbGetProjectsByUser(profile.Username)
+		posts, err := post.DbGetPostsByUser(profile.Username)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 			return
@@ -40,7 +40,7 @@ func InitializeSingleUserPage(router *gin.Engine) {
 			"title": profileView.Username, 
 			"Username": profileView.Username,
 			"CreatedAt": profileView.CreatedAt,
-			"projects": project.ProjectsToProjectView(projects),
+			"posts": post.PostsToPostView(posts),
 		})
 })
 }

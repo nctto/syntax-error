@@ -1,4 +1,4 @@
-package project
+package post
 
 import (
 	utils "go-api/pkg/utils"
@@ -10,23 +10,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func RequiredFields(project Project) bool {
-	if project.Title == "" {
+func RequiredFields(post Post) bool {
+	if post.Title == "" {
 		return false
 	}
-	if project.Content == "" {
+	if post.Content == "" {
 		return false
 	}
-	if project.Link == "" {
+	if post.Link == "" {
 		return false
 	}
-	if project.AuthorID == "" {
+	if post.AuthorID == "" {
 		return false
 	}
 	return true
 }
 
-func fakeProject() string {
+func fakePost() string {
 	return `{
 		"title": "`+faker.Word()+`",
 		"content": "`+faker.Sentence()+`",
@@ -40,30 +40,30 @@ func ObjectIdToString(id primitive.ObjectID) string {
 	return id.Hex()
 }
 
-func ProjectToProjectView(project Project) ProjectView {
-	return ProjectView{
-		ID: ObjectIdToString(project.ID),
-		TargetID: ObjectIdToString(project.ID),
-		Title: project.Title,
-		Content: project.Content,
-		AuthorID: project.AuthorID,
-		Link: project.Link,
-		Tags: project.Tags,
-		VotesTotal: project.VotesTotal,
-		Voted: project.Voted,
-		CommentsTotal: project.CommentsTotal,
-		Awards: project.Awards,
-		AwardsTotal: project.AwardsTotal,
-		CreatedAt: utils.DateToString(project.CreatedAt),
+func PostToPostView(post Post) PostView {
+	return PostView{
+		ID: ObjectIdToString(post.ID),
+		TargetID: ObjectIdToString(post.ID),
+		Title: post.Title,
+		Content: post.Content,
+		AuthorID: post.AuthorID,
+		Link: post.Link,
+		Tags: post.Tags,
+		VotesTotal: post.VotesTotal,
+		Voted: post.Voted,
+		CommentsTotal: post.CommentsTotal,
+		Awards: post.Awards,
+		AwardsTotal: post.AwardsTotal,
+		CreatedAt: utils.DateToString(post.CreatedAt),
 	}
 }
 
-func ProjectsToProjectView(projects []Project) []ProjectView {
-	var projectView []ProjectView
-	for _, project := range projects {
-		projectView = append(projectView, ProjectToProjectView(project))
+func PostsToPostView(posts []Post) []PostView {
+	var postView []PostView
+	for _, post := range posts {
+		postView = append(postView, PostToPostView(post))
 	}
-	return projectView
+	return postView
 }
 
 func GetPagination(page int, limit int, sortBy string, total int64) Pagination {
@@ -91,9 +91,9 @@ func GetPagination(page int, limit int, sortBy string, total int64) Pagination {
 	return pagination
 }
 
-func ProjectPaginatedView(projects []Project, totalRecords int64, page int, limit int, sortBy string) ProjectPaginated {
-	ProjectPaginated := ProjectPaginated{}
-	ProjectPaginated.Data = ProjectsToProjectView(projects)
+func PostPaginatedView(posts []Post, totalRecords int64, page int, limit int, sortBy string) PostPaginated {
+	PostPaginated := PostPaginated{}
+	PostPaginated.Data = PostsToPostView(posts)
 
 	pagination := Pagination{}
 	pagination.Page = page
@@ -116,12 +116,12 @@ func ProjectPaginatedView(projects []Project, totalRecords int64, page int, limi
 	}
 	pagination.NextLink = "?page=" + strconv.Itoa(page+1) + "&limit=" + strconv.Itoa(limit)
 	pagination.PrevLink = "?page=" + strconv.Itoa(page-1) + "&limit=" + strconv.Itoa(limit)
-	ProjectPaginated.Pagination = pagination
+	PostPaginated.Pagination = pagination
 
-	return ProjectPaginated
+	return PostPaginated
 }
 
-func AddProjectsPipelineSorter(pipeline []bson.M, sortBy string) []bson.M {
+func AddPostsPipelineSorter(pipeline []bson.M, sortBy string) []bson.M {
 	if sortBy == "new"{
 		pipeline = append(pipeline, bson.M{"$sort": bson.M{"created_at": -1}})
 	} else if sortBy == "old"{
@@ -134,7 +134,7 @@ func AddProjectsPipelineSorter(pipeline []bson.M, sortBy string) []bson.M {
 	return pipeline
 }
 
-func ProjectsDefaultQueryParams(c *gin.Context) (int, int, string) {
+func PostsDefaultQueryParams(c *gin.Context) (int, int, string) {
 	page := c.Query("page")
 	limit := c.Query("limit")
 	sortBy := c.Query("sort_by")
@@ -197,14 +197,14 @@ func GetPipeline(pipeline []bson.M) []bson.M {
 	return pipeline
 }
 
-func GetProjectPipelineByID(projectID primitive.ObjectID) []bson.M {
+func GetPostPipelineByID(postID primitive.ObjectID) []bson.M {
 	pipeline := []bson.M{
-		{"$match": bson.M{"_id": projectID}},
+		{"$match": bson.M{"_id": postID}},
 	}
 	pipeline = GetPipeline(pipeline)
 	return pipeline
 }
-func GetProjectsByUserPipeline(username string) []bson.M {
+func GetPostsByUserPipeline(username string) []bson.M {
 	pipeline := []bson.M{
 		{"$match": bson.M{"author_id": username}},
 	}
@@ -212,10 +212,10 @@ func GetProjectsByUserPipeline(username string) []bson.M {
 	return pipeline
 }
 
-func GetProjectsPaginatedPipeline(page int, limit int, sortBy string) []bson.M {
+func GetPostsPaginatedPipeline(page int, limit int, sortBy string) []bson.M {
 	skip := int64(page*limit - limit)
 	
-	// lookup most voted projects
+	// lookup most voted posts
 	if sortBy == "best" {
 		pipeline := []bson.M{
 			{
@@ -258,7 +258,7 @@ func GetProjectsPaginatedPipeline(page int, limit int, sortBy string) []bson.M {
 	return pipeline
 }
 
-func AddProjectsVotedPipeline(pipeline []bson.M, authorID string) []bson.M {
+func AddPostsVotedPipeline(pipeline []bson.M, authorID string) []bson.M {
 	pipeline = append(pipeline, bson.M{"$lookup": bson.M{
 		"from":         "votes",
 		"let":          bson.M{"target_id": "$_id"},

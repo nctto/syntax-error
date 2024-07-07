@@ -35,7 +35,7 @@ function load() {
       errors.push(...ValidateInput({ target: input }));
     }
     if (errors.length > 0) {
-      alert('Please fix the errors before submitting the projects');
+      alert('Please fix the errors before submitting the posts');
     } else {
       document.querySelector('form').reset();
     }

@@ -45,8 +45,8 @@ func CreateVote(c *gin.Context) {
 		return
 	}
 	
-	projectId := c.Param("targetID")
-	id, err := primitive.ObjectIDFromHex(projectId)
+	postId := c.Param("targetID")
+	id, err := primitive.ObjectIDFromHex(postId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid vote ID"})
 		return
@@ -57,7 +57,7 @@ func CreateVote(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"ID": projectId ,"Votes": votes, "Voted": voted})
+	c.JSON(http.StatusCreated, gin.H{"ID": postId ,"Votes": votes, "Voted": voted})
 }
 
 func UpdateVote(c *gin.Context) {

@@ -48,7 +48,7 @@ func UiSubmitVote(c *gin.Context) {
 
 	var template string
 	if target == "p" {
-		template = "component-vote-project.html"
+		template = "component-vote-post.html"
 	} else {
 		template = "component-vote-comment.html"
 	}

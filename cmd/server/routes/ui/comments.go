@@ -91,6 +91,44 @@ func CommentSubmitForm(c *gin.Context) {
 }
 
 func InitializeCommentsUI(router *gin.Engine) {
+	router.GET("/ui/comment/:commentID", middleware.IsAuthenticated, func(c *gin.Context) {
+		
+		session := sessions.Default(c)
+		user := session.Get("profile")
+		if user == nil {
+			c.Redirect(http.StatusFound, "/auth/login")
+		}
+
+		commentID := c.Param("commentID")
+		id, err := primitive.ObjectIDFromHex(commentID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid  ID"})
+			return
+		}
+
+		comment, err := cmt.DbGetCommentID(id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+			return
+		}
+
+		comments, err := cmt.DbGetAllComments(1, 10, "best", user, id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+			return
+		}
+		
+		c.HTML(200, "single-comment.html", gin.H{
+			"ID": comment.ID.Hex(),
+			"TargetID": comment.TargetID.Hex(),
+			"AuthorID": comment.AuthorID,
+			"Content": comment.Content,
+			"Replies": comments,
+			"CreatedAt": comment.CreatedAt.Time().Format("2006-01-02 15:04:05"),
+			"Voted": comment.Voted,
+			"VotesTotal": comment.VotesTotal,
+		})
+	})
 	router.GET("/ui/comment/form/:targetID", middleware.IsAuthenticated, CommentForm)
 	router.POST("/ui/comment/submit/:targetID", middleware.IsAuthenticated, CommentSubmitForm)
 }

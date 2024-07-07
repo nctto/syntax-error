@@ -1,13 +1,12 @@
 <div id="comment-form-{{.ID }}-wrapper" class="flex flex-col w-full rounded-xl">
     <form id="comment-form-{{.ID }}"  class="flex flex-col" hx-post="/ui/comment/submit/{{ .TargetID }}" hx-ext="json-enc" hx-target="#comment-form-{{.ID}}" hx-swap="innerHTML">
-        <div class=" relative form-control flex flex-col border border-1 rounded-xl pt-5 pl-5 pr-5">
+        <div class=" relative form-control flex flex-col border border-1 rounded-xl pt-2 pl-2 pr-2">
             <button type="button" id="comment-remove-button-{{.ID}}" hx-target="#comment-form-{{.ID }}-wrapper" hx-swap="outerHTML"  class="absolute right-5 top-5  w-10 w-10 text-xs"> 
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                 </svg>
             </button>
-            <!-- <label for="comment" class=" text-xs font-bold">Comment in: {{ .TargetID }}</label> -->
-            <textarea id="comment" placeholder="say something..." name="Content" class=" text-sm  resize-none focus:outline-none" rows="3" cols="50" maxlength="250" required></textarea>
+            <textarea id="comment" placeholder="say something..." name="Content" class=" text-sm rounded-lg p-2 resize-none focus:outline-none" rows="3" cols="50" maxlength="250" required></textarea>
             <div class="flex flex-row items-end justify-end pb-5">
                 <button hx-trigger="comment-form-{{.ID }}" class="p-3 text-xs rounded-full flex flex-row text-xs" type="submit">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" class="w-5" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">

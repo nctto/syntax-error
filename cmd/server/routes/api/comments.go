@@ -7,8 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InitializeComments(router *gin.Engine) {
-	router.GET("/api/comments/:targetID", middleware.IsAuthenticated, comment.GetComments)
-	router.POST("/api/comments/:targetID", middleware.IsAuthenticated, comment.CreateComment)
-	router.DELETE("/api/comments/:id", middleware.IsAuthenticated, comment.DeleteComment)
+func InitializeComments(router *gin.RouterGroup) {
+	router.GET("/:targetID", comment.GetComments)
+	router.POST("/:targetID", middleware.IsAuthenticated, comment.CreateComment)
+	router.DELETE("/:id", middleware.IsAuthenticated, comment.DeleteComment)
 }

@@ -1,4 +1,4 @@
-package project
+package post
 
 import (
 	aw "go-api/internal/award"
@@ -8,7 +8,7 @@ import (
 )
 
 
-type Project struct {
+type Post struct {
 	ID      primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 	Title    string             `json:"title" bson:"title"`
 	Content  string             `json:"content" bson:"content"`
@@ -26,7 +26,7 @@ type Project struct {
 	AwardsTotal  int 			`json:"awards_total" bson:"awards_total,omitempty"`
 }
 
-type ProjectView struct {
+type PostView struct {
 	ID      string `json:"id" bson:"_id,omitempty"`
 	Title    string `json:"title" bson:"title"`
 	Content  string `json:"content" bson:"content"`
@@ -57,12 +57,12 @@ type Pagination struct {
 	PrevLink string
 }
 
-type ProjectPaginated struct {
-	Data         []ProjectView `json:"data"`
+type PostPaginated struct {
+	Data         []PostView `json:"data"`
 	Pagination   Pagination    `json:"pagination"`
 }
 
-type ProjectIncoming struct {
+type PostIncoming struct {
 	Title    string `json:"title" bson:"title"`
 	Content  string `json:"content" bson:"content"`
 	Link	 string `json:"link" bson:"link"`
