@@ -17,6 +17,8 @@ func ConnectDB() *mongo.Client {
 		log.Fatalf("Failed to load the env vars: %v", err)
 	}
 
+	println("THIS MONGO URL =>>> ",os.Getenv("MONGO_URI"))
+
 	clientOptions := options.Client().ApplyURI(os.Getenv("MONGO_URI"))
 	client, err := mongo.NewClient(clientOptions)
 	if err != nil {
@@ -40,4 +42,3 @@ func ConnectDB() *mongo.Client {
 	return client
 }
 
-var Invalid_ID_Message = "Invalid ID"
